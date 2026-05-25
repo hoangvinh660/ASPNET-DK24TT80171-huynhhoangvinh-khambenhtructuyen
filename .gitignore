@@ -4,8 +4,8 @@ bin/
 obj/
 *.user
 *.suo
-chay-web.ps1
-nuget.exe
+*.ps1
+*.exe
 ## NuGet
 packages/
 !packages/repositories.config
