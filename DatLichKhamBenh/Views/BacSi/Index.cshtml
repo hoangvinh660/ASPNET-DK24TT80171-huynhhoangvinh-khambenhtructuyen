@@ -1,0 +1,74 @@
+@model DatLichKhamBenh.Models.ViewModels.TimKiemBacSiViewModel
+@{
+    ViewData["Title"] = "Tìm bác sĩ";
+}
+
+@functions {
+    string DinhDangVnd(decimal tien) => string.Format("{0:N0} ₫", tien);
+}
+
+<h2 class="mb-4"><i class="bi bi-person-vcard-fill text-primary"></i> Tìm bác sĩ</h2>
+
+<form asp-action="Index" method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-6">
+                <label asp-for="TuKhoa" class="form-label">Từ khoá (tên, học vị, mô tả)</label>
+                <input asp-for="TuKhoa" class="form-control" placeholder="VD: Nguyen, Tien si, tim mach..." />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="MaChuyenKhoa" class="form-label">Chuyên khoa</label>
+                <select asp-for="MaChuyenKhoa" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    @foreach (var ck in Model.DanhSachChuyenKhoa)
+                    {
+                        <option value="@ck.MaChuyenKhoa">@ck.TenChuyenKhoa</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Tìm
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="mb-3 text-muted">
+    Tìm thấy <strong>@Model.DanhSachBacSi.Count</strong> bác sĩ.
+</div>
+
+<div class="row g-3">
+    @foreach (var bs in Model.DanhSachBacSi)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex gap-3">
+                        <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">@bs.HocVi @bs.NguoiDung?.HoTen</h6>
+                            <small class="badge bg-info text-dark">@bs.ChuyenKhoa?.TenChuyenKhoa</small>
+                            <div class="text-muted small mt-1">@bs.KinhNghiem</div>
+                            <div class="text-success fw-bold mt-1">@DinhDangVnd(bs.GiaKham) / lần khám</div>
+                            <div class="d-flex gap-2 mt-2">
+                                <a asp-action="ChiTiet" asp-route-id="@bs.MaBacSi" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-info-circle"></i> Chi tiết
+                                </a>
+                                <a asp-controller="LichHen" asp-action="DatLich" asp-route-maBacSi="@bs.MaBacSi" class="btn btn-sm btn-success">
+                                    <i class="bi bi-calendar-plus"></i> Đặt lịch
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.DanhSachBacSi.Any())
+{
+    <div class="alert alert-warning">Không tìm thấy bác sĩ phù hợp.</div>
+}

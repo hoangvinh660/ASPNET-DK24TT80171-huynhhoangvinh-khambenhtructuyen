@@ -1,0 +1,117 @@
+@model DatLichKhamBenh.Models.ViewModels.TrangChuViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+@functions {
+    string DinhDangVnd(decimal tien) => string.Format("{0:N0} ₫", tien);
+}
+
+<!-- HERO SECTION -->
+<section class="bg-primary text-white rounded-3 p-5 mb-4 shadow-sm">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h1 class="display-5 fw-bold">Đặt lịch khám bệnh trực tuyến</h1>
+            <p class="lead mb-3">Tìm bác sĩ phù hợp, xem thông tin chi tiết và đặt lịch khám chỉ với vài thao tác.</p>
+            <a asp-controller="BacSi" asp-action="Index" class="btn btn-light btn-lg">
+                <i class="bi bi-search"></i> Tìm bác sĩ ngay
+            </a>
+        </div>
+        <div class="col-md-5 text-center d-none d-md-block">
+            <i class="bi bi-hospital" style="font-size: 9rem; opacity: 0.6;"></i>
+        </div>
+    </div>
+</section>
+
+<!-- THONG KE -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-person-vcard text-primary" style="font-size: 2.5rem;"></i>
+                <h2 class="display-6 fw-bold mt-2">@Model.TongSoBacSi</h2>
+                <p class="text-muted mb-0">Bác sĩ</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-heart-pulse text-danger" style="font-size: 2.5rem;"></i>
+                <h2 class="display-6 fw-bold mt-2">@Model.TongSoChuyenKhoa</h2>
+                <p class="text-muted mb-0">Chuyên khoa</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-people text-success" style="font-size: 2.5rem;"></i>
+                <h2 class="display-6 fw-bold mt-2">@Model.TongSoBenhNhan</h2>
+                <p class="text-muted mb-0">Bệnh nhân</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHUYEN KHOA NOI BAT -->
+<section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0"><i class="bi bi-grid-fill text-primary"></i> Chuyên khoa</h3>
+        <a asp-controller="ChuyenKhoa" asp-action="Index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+    </div>
+    <div class="row g-3">
+        @foreach (var ck in Model.ChuyenKhoaNoiBat)
+        {
+            <div class="col-md-4 col-lg-2">
+                <a asp-controller="ChuyenKhoa" asp-action="ChiTiet" asp-route-id="@ck.MaChuyenKhoa"
+                   class="card text-decoration-none border-0 shadow-sm h-100 text-center text-dark">
+                    <div class="card-body">
+                        <i class="bi bi-clipboard2-pulse text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">@ck.TenChuyenKhoa</h6>
+                        <small class="text-muted">@ck.DanhSachBacSi.Count bác sĩ</small>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- BAC SI NOI BAT -->
+<section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0"><i class="bi bi-person-vcard-fill text-primary"></i> Bác sĩ nổi bật</h3>
+        <a asp-controller="BacSi" asp-action="Index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+    </div>
+    <div class="row g-3">
+        @foreach (var bs in Model.BacSiNoiBat)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex gap-3">
+                            <div class="text-center">
+                                <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">@bs.HocVi @bs.NguoiDung?.HoTen</h6>
+                                <small class="badge bg-info text-dark">@bs.ChuyenKhoa?.TenChuyenKhoa</small>
+                                <div class="text-success fw-bold mt-1">@DinhDangVnd(bs.GiaKham) / lần khám</div>
+                                <div class="d-flex gap-2 mt-2">
+                                    <a asp-controller="BacSi" asp-action="ChiTiet" asp-route-id="@bs.MaBacSi"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-info-circle"></i> Chi tiết
+                                    </a>
+                                    <a asp-controller="LichHen" asp-action="DatLich" asp-route-maBacSi="@bs.MaBacSi"
+                                       class="btn btn-sm btn-success">
+                                        <i class="bi bi-calendar-plus"></i> Đặt lịch
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

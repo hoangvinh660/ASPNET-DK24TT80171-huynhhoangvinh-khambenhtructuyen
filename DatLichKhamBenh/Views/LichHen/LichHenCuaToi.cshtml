@@ -1,0 +1,122 @@
+@model List<DatLichKhamBenh.Models.LichHen>
+@{
+    ViewData["Title"] = "Lịch hẹn của tôi";
+}
+
+@functions {
+    string NhanTrangThai(string trang)
+    {
+        return trang switch
+        {
+            DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan => "Chờ xác nhận",
+            DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan => "Đã xác nhận",
+            DatLichKhamBenh.Models.TrangThaiLichHen.DaKham => "Đã khám",
+            DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy => "Đã hủy",
+            _ => trang
+        };
+    }
+
+    string ClassTrangThai(string trang)
+    {
+        return trang switch
+        {
+            DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan => "bg-warning text-dark",
+            DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan => "bg-info text-dark",
+            DatLichKhamBenh.Models.TrangThaiLichHen.DaKham => "bg-success",
+            DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy => "bg-secondary",
+            _ => "bg-light text-dark"
+        };
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="bi bi-calendar-check text-primary"></i> Lịch hẹn của tôi</h2>
+    <a asp-action="DatLich" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Đặt lịch mới
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Bạn chưa có lịch hẹn nào. <a asp-action="DatLich">Đặt lịch ngay</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Bác sĩ</th>
+                    <th>Chuyên khoa</th>
+                    <th>Ngày khám</th>
+                    <th>Giờ</th>
+                    <th>Lý do</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td>@l.MaLichHen</td>
+                        <td>@l.BacSi?.HocVi @l.BacSi?.NguoiDung?.HoTen</td>
+                        <td>@l.BacSi?.ChuyenKhoa?.TenChuyenKhoa</td>
+                        <td>@l.NgayKham.ToString("dd/MM/yyyy")</td>
+                        <td>@l.GioKham.ToString(@"hh\:mm")</td>
+                        <td>@(l.LyDoKham ?? "—")</td>
+                        <td><span class="badge @ClassTrangThai(l.TrangThai)">@NhanTrangThai(l.TrangThai)</span></td>
+                        <td class="text-end">
+                            @if (l.TrangThai is DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan
+                                or DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan)
+                            {
+                                <form asp-action="Huy" method="post" class="d-inline"
+                                      onsubmit="return confirm('Bạn chắc chắn muốn hủy lịch hẹn này?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@l.MaLichHen" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i> Hủy
+                                    </button>
+                                </form>
+                            }
+                            else if (l.HoSoBenhAn is not null)
+                            {
+                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+                                        data-bs-target="#modalHoSo_@l.MaLichHen">
+                                    <i class="bi bi-file-medical"></i> Hồ sơ
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @foreach (var l in Model.Where(x => x.HoSoBenhAn is not null))
+    {
+        <div class="modal fade" id="modalHoSo_@l.MaLichHen" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Hồ sơ khám #@l.MaLichHen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Chẩn đoán:</strong> @l.HoSoBenhAn!.ChanDoan</p>
+                        <p><strong>Đơn thuốc:</strong><br />@(l.HoSoBenhAn.DonThuoc ?? "—")</p>
+                        <p><strong>Lời khuyên:</strong><br />@(l.HoSoBenhAn.LoiKhuyen ?? "—")</p>
+                        <small class="text-muted">Lập ngày @l.HoSoBenhAn.NgayTao.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

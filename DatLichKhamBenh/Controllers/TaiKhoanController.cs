@@ -26,7 +26,7 @@ public class TaiKhoanController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "TrangChu");
         }
 
         return View(new DangNhapViewModel { ReturnUrl = returnUrl });
@@ -66,7 +66,7 @@ public class TaiKhoanController : Controller
 
         // Sau khi dang nhap thanh cong: dieu huong ve Home.
         // Buoc 7: doi case Admin -> RedirectToAction("Index", "Dashboard") khi co Admin controller.
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "TrangChu");
     }
 
     // ---------- DANG KY (Benh nhan tu dang ky) ----------
@@ -76,7 +76,7 @@ public class TaiKhoanController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "TrangChu");
         }
 
         return View(new DangKyViewModel());
@@ -129,7 +129,7 @@ public class TaiKhoanController : Controller
         await SignInUserAsync(nguoiDung, isPersistent: false);
 
         TempData["ThongBao"] = "Dang ky thanh cong! Chao mung ban den voi he thong.";
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "TrangChu");
     }
 
     // ---------- DANG XUAT ----------
@@ -141,7 +141,7 @@ public class TaiKhoanController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         HttpContext.Session.Clear();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "TrangChu");
     }
 
     // ---------- TU CHOI (403) ----------

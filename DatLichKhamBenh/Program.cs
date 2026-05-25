@@ -43,11 +43,13 @@ SeedData.Initialize(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/TrangChu/Error");
     app.UseHsts();
+    // Chi bat HTTPS redirect trong moi truong Production (de tranh canh bao
+    // "Failed to determine the https port for redirect" khi chay HTTP local).
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -61,6 +63,6 @@ app.UseAuthorization();
 // truc tiep tren tung admin controller (xem Controllers/Admin/* o Buoc 7).
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=TrangChu}/{action=Index}/{id?}");
 
 app.Run();
