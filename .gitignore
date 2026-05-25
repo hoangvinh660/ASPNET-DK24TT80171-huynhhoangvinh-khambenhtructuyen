@@ -1,0 +1,17 @@
+## Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+
+## NuGet
+packages/
+!packages/repositories.config
+
+## Build
+[Dd]ebug/
+[Rr]elease/
+
+## OS
+Thumbs.db
