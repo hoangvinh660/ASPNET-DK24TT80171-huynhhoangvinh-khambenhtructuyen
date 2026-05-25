@@ -8,17 +8,23 @@
 }
 
 <!-- HERO SECTION -->
-<section class="bg-primary text-white rounded-3 p-5 mb-4 shadow-sm">
+<section class="hero-section text-white rounded-3 p-5 mb-4 shadow">
     <div class="row align-items-center">
         <div class="col-md-7">
             <h1 class="display-5 fw-bold">Đặt lịch khám bệnh trực tuyến</h1>
-            <p class="lead mb-3">Tìm bác sĩ phù hợp, xem thông tin chi tiết và đặt lịch khám chỉ với vài thao tác.</p>
-            <a asp-controller="BacSi" asp-action="Index" class="btn btn-light btn-lg">
-                <i class="bi bi-search"></i> Tìm bác sĩ ngay
+            <p class="lead mb-4">
+                Tìm bác sĩ theo chuyên khoa, xem hồ sơ chi tiết và đặt lịch khám
+                chỉ với vài thao tác. Nhận email xác nhận tự động.
+            </p>
+            <a asp-controller="BacSi" asp-action="Index" class="btn btn-light btn-lg me-2">
+                <i class="bi bi-search"></i> Tìm bác sĩ
+            </a>
+            <a asp-controller="ChuyenKhoa" asp-action="Index" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-grid"></i> Xem chuyên khoa
             </a>
         </div>
         <div class="col-md-5 text-center d-none d-md-block">
-            <i class="bi bi-hospital" style="font-size: 9rem; opacity: 0.6;"></i>
+            <i class="bi bi-hospital" style="font-size: 9rem; opacity: 0.5;"></i>
         </div>
     </div>
 </section>
@@ -74,6 +80,49 @@
                 </a>
             </div>
         }
+    </div>
+</section>
+
+<!-- QUY TRINH DAT LICH -->
+<section class="mb-4">
+    <h3 class="mb-3"><i class="bi bi-list-check text-primary"></i> Quy trình đặt lịch</h3>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="badge bg-primary rounded-circle p-3 mb-2" style="font-size: 1.1rem;">1</div>
+                    <h6>Đăng ký tài khoản</h6>
+                    <small class="text-muted">Tạo tài khoản bệnh nhân miễn phí trong 30 giây.</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="badge bg-primary rounded-circle p-3 mb-2" style="font-size: 1.1rem;">2</div>
+                    <h6>Tìm bác sĩ</h6>
+                    <small class="text-muted">Lọc theo chuyên khoa hoặc tìm kiếm theo tên.</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="badge bg-primary rounded-circle p-3 mb-2" style="font-size: 1.1rem;">3</div>
+                    <h6>Đặt lịch</h6>
+                    <small class="text-muted">Chọn ngày, giờ và mô tả lý do khám.</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="badge bg-success rounded-circle p-3 mb-2" style="font-size: 1.1rem;">4</div>
+                    <h6>Nhận xác nhận</h6>
+                    <small class="text-muted">Email tự động khi bác sĩ xác nhận lịch.</small>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using DatLichKhamBenh.Models;
 using DatLichKhamBenh.Models.ViewModels;
+using DatLichKhamBenh.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace DatLichKhamBenh.Controllers;
 public class BacSiLichHenController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IEmailService _email;
 
-    public BacSiLichHenController(AppDbContext db)
+    public BacSiLichHenController(AppDbContext db, IEmailService email)
     {
         _db = db;
+        _email = email;
     }
 
     // GET /BacSiLichHen?trangThai=ChoXacNhan
@@ -68,7 +71,14 @@ public class BacSiLichHenController : Controller
         lichHen.TrangThai = TrangThaiLichHen.DaXacNhan;
         await _db.SaveChangesAsync();
 
-        // Buoc 8: goi EmailService.GuiMailXacNhanLich(lichHen)
+        // Nap navigation roi gui mail xac nhan cho benh nhan
+        var lichDayDu = await _db.LichHens
+            .Include(l => l.BenhNhan).ThenInclude(b => b!.NguoiDung)
+            .Include(l => l.BacSi).ThenInclude(b => b!.NguoiDung)
+            .Include(l => l.BacSi).ThenInclude(b => b!.ChuyenKhoa)
+            .FirstAsync(l => l.MaLichHen == lichHen.MaLichHen);
+        await _email.GuiMailXacNhanLichAsync(lichDayDu);
+
         TempData["ThongBao"] = $"Da xac nhan lich hen #{lichHen.MaLichHen}.";
         return RedirectToAction(nameof(Index));
     }
@@ -90,7 +100,12 @@ public class BacSiLichHenController : Controller
         lichHen.TrangThai = TrangThaiLichHen.DaHuy;
         await _db.SaveChangesAsync();
 
-        // Buoc 8: goi EmailService.GuiMailHuyLich(lichHen)
+        var lichDayDu = await _db.LichHens
+            .Include(l => l.BenhNhan).ThenInclude(b => b!.NguoiDung)
+            .Include(l => l.BacSi).ThenInclude(b => b!.NguoiDung)
+            .FirstAsync(l => l.MaLichHen == lichHen.MaLichHen);
+        await _email.GuiMailHuyLichAsync(lichDayDu, "Bac si tu choi/huy lich");
+
         TempData["ThongBao"] = $"Da tu choi (huy) lich hen #{lichHen.MaLichHen}.";
         return RedirectToAction(nameof(Index));
     }
