@@ -56,13 +56,9 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Route cho khu vuc Admin (Controllers/Admin/*) - kich hoat o Buoc 7
-app.MapControllerRoute(
-    name: "admin",
-    pattern: "Admin/{controller=Dashboard}/{action=Index}/{id?}");
-
-// Route mac dinh - TrangChuController se tao o Buoc 5
-// Buoc 1: tam thoi van tro ve HomeController template de smoke test build pass
+// Route mac dinh.
+// Khu vuc /Admin/* duoc khai bao bang [Route("Admin/[controller]/[action]")]
+// truc tiep tren tung admin controller (xem Controllers/Admin/* o Buoc 7).
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

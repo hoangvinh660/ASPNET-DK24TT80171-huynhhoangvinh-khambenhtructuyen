@@ -64,11 +64,9 @@ public class TaiKhoanController : Controller
             return Redirect(model.ReturnUrl);
         }
 
-        return user.VaiTro switch
-        {
-            "Admin" => RedirectToAction("Index", "Dashboard", new { area = "" }),
-            _ => RedirectToAction("Index", "Home")
-        };
+        // Sau khi dang nhap thanh cong: dieu huong ve Home.
+        // Buoc 7: doi case Admin -> RedirectToAction("Index", "Dashboard") khi co Admin controller.
+        return RedirectToAction("Index", "Home");
     }
 
     // ---------- DANG KY (Benh nhan tu dang ky) ----------
