@@ -1,0 +1,131 @@
+@model DatLichKhamBenh.Models.ViewModels.DatLichViewModel
+@{
+    ViewData["Title"] = "Đặt lịch khám";
+}
+
+@functions {
+    string DinhDangVnd(decimal tien) => string.Format("{0:N0} ₫", tien);
+}
+
+<h2 class="mb-4"><i class="bi bi-calendar-plus text-primary"></i> Đặt lịch khám</h2>
+
+<form asp-action="DatLich" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin lịch hẹn</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="MaBacSi" class="form-label">Bác sĩ</label>
+                        <select asp-for="MaBacSi" class="form-select" id="selectBacSi">
+                            <option value="">-- Chọn bác sĩ --</option>
+                            @foreach (var bs in Model.DanhSachBacSi)
+                            {
+                                <option value="@bs.MaBacSi"
+                                        data-gia="@bs.GiaKham"
+                                        data-chuyenkhoa="@bs.ChuyenKhoa?.TenChuyenKhoa"
+                                        data-hocvi="@bs.HocVi"
+                                        data-hoten="@bs.NguoiDung?.HoTen">
+                                    @bs.HocVi @bs.NguoiDung?.HoTen — @bs.ChuyenKhoa?.TenChuyenKhoa
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="MaBacSi" class="text-danger"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="NgayKham" class="form-label">Ngày khám</label>
+                            <input asp-for="NgayKham" type="date" class="form-control"
+                                   min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="NgayKham" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="GioKhamStr" class="form-label">Giờ khám</label>
+                            <select asp-for="GioKhamStr" class="form-select">
+                                <option value="">-- Chọn giờ --</option>
+                                @foreach (var g in DatLichKhamBenh.Models.ViewModels.DatLichViewModel.KhungGioMau)
+                                {
+                                    <option value="@g">@g</option>
+                                }
+                            </select>
+                            <span asp-validation-for="GioKhamStr" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label asp-for="LyDoKham" class="form-label">Lý do khám / Triệu chứng</label>
+                        <textarea asp-for="LyDoKham" rows="4" class="form-control" placeholder="Mô tả triệu chứng để bác sĩ chuẩn bị tốt nhất..."></textarea>
+                        <span asp-validation-for="LyDoKham" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg mt-4">
+                        <i class="bi bi-check-circle"></i> Xác nhận đặt lịch
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Thông tin bác sĩ</h6>
+                    <div id="boxBacSi">
+                        @if (Model.BacSiHienTai is not null)
+                        {
+                            <div class="d-flex gap-3">
+                                <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+                                <div>
+                                    <h6 class="mb-1">@Model.BacSiHienTai.HocVi @Model.BacSiHienTai.NguoiDung?.HoTen</h6>
+                                    <span class="badge bg-info text-dark">@Model.BacSiHienTai.ChuyenKhoa?.TenChuyenKhoa</span>
+                                    <div class="text-success fw-bold mt-2">@DinhDangVnd(Model.BacSiHienTai.GiaKham) / lần khám</div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">Chọn bác sĩ ở khung bên trái để xem thông tin.</p>
+                        }
+                    </div>
+
+                    <hr />
+                    <h6 class="text-muted">Lưu ý</h6>
+                    <ul class="small text-muted mb-0">
+                        <li>Chỉ được đặt từ ngày mai trở đi.</li>
+                        <li>Mỗi khung giờ 30 phút.</li>
+                        <li>Lịch hẹn cần bác sĩ xác nhận trước khi đến.</li>
+                        <li>Có thể hủy lịch trước khi đã khám.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Cap nhat khung "Thong tin bac si" khi nguoi dung thay doi select
+        document.getElementById('selectBacSi').addEventListener('change', function () {
+            var opt = this.options[this.selectedIndex];
+            var box = document.getElementById('boxBacSi');
+            if (!opt.value) {
+                box.innerHTML = '<p class="text-muted small mb-0">Chọn bác sĩ ở khung bên trái để xem thông tin.</p>';
+                return;
+            }
+            var gia = parseInt(opt.dataset.gia || '0', 10).toLocaleString('vi-VN');
+            box.innerHTML =
+                '<div class="d-flex gap-3">' +
+                '  <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>' +
+                '  <div>' +
+                '    <h6 class="mb-1">' + opt.dataset.hocvi + ' ' + opt.dataset.hoten + '</h6>' +
+                '    <span class="badge bg-info text-dark">' + opt.dataset.chuyenkhoa + '</span>' +
+                '    <div class="text-success fw-bold mt-2">' + gia + ' ₫ / lần khám</div>' +
+                '  </div>' +
+                '</div>';
+        });
+    </script>
+}
