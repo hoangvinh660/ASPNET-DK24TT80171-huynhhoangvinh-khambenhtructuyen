@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using DatLichKhamBenh.Models;
-// using DatLichKhamBenh.Services;
+using DatLichKhamBenh.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +12,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DatLichKhamBenh")));
 
-// TODO Buoc 8: Dang ky EmailService (MailKit gui mail qua Gmail SMTP)
-// builder.Services.AddScoped<IEmailService, EmailService>();
-// builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+// Dang ky EmailService (MailKit gui mail qua Gmail SMTP).
+// Cau hinh trong appsettings.json -> "EmailSettings".
+// Neu chua dien SenderEmail/SenderPassword that, service se LOG ra console
+// thay vi gui (xem EmailSettings.IsConfigured trong Services/EmailSettings.cs).
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Bat Session (luu thong tin tam thoi nhu gio dat lich da chon)
 builder.Services.AddDistributedMemoryCache();

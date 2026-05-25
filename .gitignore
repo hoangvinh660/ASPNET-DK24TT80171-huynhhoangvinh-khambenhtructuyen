@@ -5,7 +5,7 @@
 # ---------- Cursor IDE ----------
 .cursor/
 .cursorrules
-
+.md
 # ---------- Visual Studio / VS Code / Rider ----------
 .vs/
 .vscode/

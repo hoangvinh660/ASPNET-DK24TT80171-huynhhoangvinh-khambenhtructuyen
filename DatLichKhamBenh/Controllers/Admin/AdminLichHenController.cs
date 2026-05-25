@@ -1,4 +1,5 @@
 using DatLichKhamBenh.Models;
+using DatLichKhamBenh.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace DatLichKhamBenh.Controllers.Admin;
 public class AdminLichHenController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IEmailService _email;
 
-    public AdminLichHenController(AppDbContext db)
+    public AdminLichHenController(AppDbContext db, IEmailService email)
     {
         _db = db;
+        _email = email;
     }
 
     public async Task<IActionResult> Index(string? trangThai, int? maBacSi, DateTime? tuNgay, DateTime? denNgay)
@@ -65,6 +68,13 @@ public class AdminLichHenController : Controller
         }
         l.TrangThai = TrangThaiLichHen.DaHuy;
         await _db.SaveChangesAsync();
+
+        var lichDayDu = await _db.LichHens
+            .Include(x => x.BenhNhan).ThenInclude(b => b!.NguoiDung)
+            .Include(x => x.BacSi).ThenInclude(b => b!.NguoiDung)
+            .FirstAsync(x => x.MaLichHen == id);
+        await _email.GuiMailHuyLichAsync(lichDayDu, "Quan tri vien huy lich");
+
         TempData["ThongBao"] = $"Da huy lich hen #{id}.";
         return RedirectToAction(nameof(Index));
     }

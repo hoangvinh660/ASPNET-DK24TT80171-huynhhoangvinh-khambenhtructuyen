@@ -1,22 +1,61 @@
-html {
-  font-size: 14px;
+/* ============ DatLichKhamBenh - custom site styles ============ */
+
+:root {
+    --brand-primary: #0d6efd;
+    --brand-primary-dark: #0a58ca;
+    --brand-accent: #10b981;
+    --brand-gray-bg: #f7f9fc;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
+html { font-size: 14px; position: relative; min-height: 100%; }
+@media (min-width: 768px) { html { font-size: 16px; } }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background: var(--brand-gray-bg);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
 }
+
+/* Focus ring nhe hon mac dinh */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+}
+
+/* Card */
+.card { transition: transform .15s ease, box-shadow .15s ease; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important; }
+
+/* Buttons */
+.btn { border-radius: .4rem; }
+.btn-primary { background-color: var(--brand-primary); border-color: var(--brand-primary); }
+.btn-primary:hover { background-color: var(--brand-primary-dark); border-color: var(--brand-primary-dark); }
+
+/* Navbar brand */
+.navbar-brand { letter-spacing: .3px; }
+
+/* Footer */
+.footer {
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb !important;
+    color: #6b7280;
+}
+.footer a { color: #6b7280; text-decoration: none; }
+.footer a:hover { color: var(--brand-primary); }
+
+/* Hero on home */
+.hero-section {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+}
+
+/* Section titles */
+section h3 { font-weight: 600; }
+
+/* Badge tweak */
+.badge { font-weight: 500; }
+
+/* Table */
+.table thead th { font-weight: 600; color: #374151; }
+
+/* Form label */
+.form-label { font-weight: 500; color: #374151; }

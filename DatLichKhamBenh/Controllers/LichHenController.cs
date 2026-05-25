@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Claims;
 using DatLichKhamBenh.Models;
 using DatLichKhamBenh.Models.ViewModels;
+using DatLichKhamBenh.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace DatLichKhamBenh.Controllers;
 public class LichHenController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IEmailService _email;
 
-    public LichHenController(AppDbContext db)
+    public LichHenController(AppDbContext db, IEmailService email)
     {
         _db = db;
+        _email = email;
     }
 
     // ---------- DAT LICH ----------
@@ -126,7 +129,13 @@ public class LichHenController : Controller
         _db.LichHens.Add(lichHen);
         await _db.SaveChangesAsync();
 
-        // Buoc 8: goi EmailService.GuiMailXacNhanDatLich(...)
+        // Gui mail "da nhan lich, cho xac nhan" cho benh nhan.
+        // Nap day du navigation truoc khi render template.
+        await _db.Entry(lichHen).Reference(l => l.BenhNhan).LoadAsync();
+        await _db.Entry(lichHen.BenhNhan!).Reference(b => b.NguoiDung).LoadAsync();
+        lichHen.BacSi = bacSi;
+        await _email.GuiMailDatLichAsync(lichHen);
+
         TempData["ThongBao"] = $"Dat lich thanh cong! Lich hen #{lichHen.MaLichHen} dang cho bac si xac nhan.";
         return RedirectToAction(nameof(LichHenCuaToi));
     }
@@ -190,7 +199,13 @@ public class LichHenController : Controller
         lichHen.TrangThai = TrangThaiLichHen.DaHuy;
         await _db.SaveChangesAsync();
 
-        // Buoc 8: goi EmailService.GuiMailHuyLich(...)
+        // Nap navigation va gui mail huy lich cho chinh benh nhan biet.
+        await _db.Entry(lichHen).Reference(l => l.BenhNhan).LoadAsync();
+        await _db.Entry(lichHen.BenhNhan!).Reference(b => b.NguoiDung).LoadAsync();
+        await _db.Entry(lichHen).Reference(l => l.BacSi).LoadAsync();
+        await _db.Entry(lichHen.BacSi!).Reference(b => b.NguoiDung).LoadAsync();
+        await _email.GuiMailHuyLichAsync(lichHen, "Benh nhan tu huy");
+
         TempData["ThongBao"] = $"Da huy lich hen #{lichHen.MaLichHen}.";
         return RedirectToAction(nameof(LichHenCuaToi));
     }
