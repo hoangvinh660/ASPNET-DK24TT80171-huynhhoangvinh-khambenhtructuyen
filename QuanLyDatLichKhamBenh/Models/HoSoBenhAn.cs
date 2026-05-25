@@ -28,7 +28,6 @@ namespace QuanLyDatLichKhamBenh.Models
         [Display(Name = "Ngay tao")]
         public DateTime NgayTao { get; set; }
 
-        [ForeignKey("MaLichHen")]
         public virtual LichHen LichHen { get; set; }
 
         public HoSoBenhAn()

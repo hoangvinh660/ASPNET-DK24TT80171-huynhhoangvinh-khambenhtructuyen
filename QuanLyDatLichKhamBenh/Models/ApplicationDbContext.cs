@@ -36,22 +36,10 @@ namespace QuanLyDatLichKhamBenh.Models
                 .Property(b => b.PhiKham)
                 .HasPrecision(18, 2);
 
-            // BacSi / BenhNhan lien ket tai khoan (FK MaTaiKhoan tren BacSi/BenhNhan)
-            modelBuilder.Entity<BacSi>()
-                .HasOptional(b => b.TaiKhoan)
-                .WithMany()
-                .HasForeignKey(b => b.MaTaiKhoan);
-
-            modelBuilder.Entity<BenhNhan>()
-                .HasOptional(b => b.TaiKhoan)
-                .WithMany()
-                .HasForeignKey(b => b.MaTaiKhoan);
-
             // HoSoBenhAn - LichHen (1-1, FK MaLichHen tren HoSoBenhAn)
             modelBuilder.Entity<HoSoBenhAn>()
                 .HasRequired(h => h.LichHen)
-                .WithOptional(l => l.HoSoBenhAn)
-                .HasForeignKey(h => h.MaLichHen);
+                .WithOptional(l => l.HoSoBenhAn);
 
             // Xoa cascade: khong xoa BacSi khi xoa ChuyenKhoa
             modelBuilder.Entity<BacSi>()
