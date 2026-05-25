@@ -1,0 +1,94 @@
+@model DatLichKhamBenh.Models.ViewModels.NhapKetQuaViewModel
+@{
+    ViewData["Title"] = $"Nhập kết quả khám #{Model.MaLichHen}";
+    var lh = Model.LichHen!;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Lịch hẹn của tôi</a></li>
+        <li class="breadcrumb-item active">Nhập kết quả #@Model.MaLichHen</li>
+    </ol>
+</nav>
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm bg-light">
+            <div class="card-body">
+                <h6 class="text-muted">Thông tin bệnh nhân</h6>
+                <div class="d-flex gap-3 mb-3">
+                    <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+                    <div>
+                        <h5 class="mb-0">@lh.BenhNhan?.NguoiDung?.HoTen</h5>
+                        <div class="small">
+                            <i class="bi bi-envelope"></i> @lh.BenhNhan?.NguoiDung?.Email
+                        </div>
+                        <div class="small">
+                            <i class="bi bi-telephone"></i> @(lh.BenhNhan?.NguoiDung?.SoDienThoai ?? "—")
+                        </div>
+                        @if (lh.BenhNhan?.NgaySinh.HasValue == true)
+                        {
+                            <div class="small text-muted">
+                                Sinh: @lh.BenhNhan.NgaySinh.Value.ToString("dd/MM/yyyy") (@(DateTime.Today.Year - lh.BenhNhan.NgaySinh.Value.Year) tuổi)
+                            </div>
+                        }
+                        <div class="small text-muted">Giới tính: @(lh.BenhNhan?.GioiTinh ?? "—")</div>
+                    </div>
+                </div>
+
+                <hr />
+                <h6 class="text-muted">Lịch hẹn</h6>
+                <p class="mb-1"><strong>Mã:</strong> #@lh.MaLichHen</p>
+                <p class="mb-1"><strong>Ngày khám:</strong> @lh.NgayKham.ToString("dd/MM/yyyy")</p>
+                <p class="mb-1"><strong>Giờ:</strong> @lh.GioKham.ToString(@"hh\:mm")</p>
+                <p class="mb-1"><strong>Lý do khám:</strong></p>
+                <p class="small text-muted">@(lh.LyDoKham ?? "—")</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h4 class="mb-3"><i class="bi bi-clipboard2-pulse text-primary"></i> Kết quả khám</h4>
+                <form asp-action="NhapKetQua" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="MaLichHen" />
+
+                    <div class="mb-3">
+                        <label asp-for="ChanDoan" class="form-label">Chẩn đoán <span class="text-danger">*</span></label>
+                        <textarea asp-for="ChanDoan" rows="3" class="form-control" placeholder="Mô tả tình trạng bệnh, chẩn đoán..."></textarea>
+                        <span asp-validation-for="ChanDoan" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DonThuoc" class="form-label">Đơn thuốc</label>
+                        <textarea asp-for="DonThuoc" rows="5" class="form-control"
+                                  placeholder="VD:&#10;- Paracetamol 500mg x 10 viên, ngày 3 lần sau ăn&#10;- ..."></textarea>
+                        <span asp-validation-for="DonThuoc" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LoiKhuyen" class="form-label">Lời khuyên</label>
+                        <textarea asp-for="LoiKhuyen" rows="3" class="form-control"
+                                  placeholder="Chế độ ăn uống, sinh hoạt, tái khám..."></textarea>
+                        <span asp-validation-for="LoiKhuyen" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Lưu kết quả & Đánh dấu đã khám
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

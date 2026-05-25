@@ -51,6 +51,14 @@
                                 </a>
                             </li>
                         }
+                        @if (vaiTro == "BacSi")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="BacSiLichHen" asp-action="Index">
+                                    <i class="bi bi-calendar-week"></i> Lịch hẹn của tôi
+                                </a>
+                            </li>
+                        }
                         @if (vaiTro == "Admin")
                         {
                             <li class="nav-item">

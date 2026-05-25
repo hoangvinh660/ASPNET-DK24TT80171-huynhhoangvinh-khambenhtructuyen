@@ -1,0 +1,137 @@
+@model List<DatLichKhamBenh.Models.LichHen>
+@{
+    ViewData["Title"] = "Lịch hẹn của tôi";
+    var trangThaiLoc = ViewBag.TrangThaiLoc as string;
+}
+
+@functions {
+    string NhanTrangThai(string t) => t switch
+    {
+        DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan => "Chờ xác nhận",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan => "Đã xác nhận",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaKham => "Đã khám",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy => "Đã hủy",
+        _ => t
+    };
+
+    string ClassTrangThai(string t) => t switch
+    {
+        DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan => "bg-warning text-dark",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan => "bg-info text-dark",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaKham => "bg-success",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
+}
+
+<h2 class="mb-4"><i class="bi bi-calendar-week text-primary"></i> Lịch hẹn của tôi</h2>
+
+<!-- Tab loc theo trang thai -->
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(string.IsNullOrEmpty(trangThaiLoc) ? "active" : "")"
+           asp-action="Index">Tất cả</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(trangThaiLoc == DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan ? "active" : "")"
+           asp-action="Index" asp-route-trangThai="ChoXacNhan">Chờ xác nhận</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(trangThaiLoc == DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan ? "active" : "")"
+           asp-action="Index" asp-route-trangThai="DaXacNhan">Đã xác nhận</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(trangThaiLoc == DatLichKhamBenh.Models.TrangThaiLichHen.DaKham ? "active" : "")"
+           asp-action="Index" asp-route-trangThai="DaKham">Đã khám</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(trangThaiLoc == DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy ? "active" : "")"
+           asp-action="Index" asp-route-trangThai="DaHuy">Đã hủy</a>
+    </li>
+</ul>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Chưa có lịch hẹn nào phù hợp.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Bệnh nhân</th>
+                    <th>Liên hệ</th>
+                    <th>Ngày khám</th>
+                    <th>Giờ</th>
+                    <th>Lý do</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td>@l.MaLichHen</td>
+                        <td>@l.BenhNhan?.NguoiDung?.HoTen</td>
+                        <td class="small">
+                            <div><i class="bi bi-envelope"></i> @l.BenhNhan?.NguoiDung?.Email</div>
+                            <div><i class="bi bi-telephone"></i> @(l.BenhNhan?.NguoiDung?.SoDienThoai ?? "—")</div>
+                        </td>
+                        <td>@l.NgayKham.ToString("dd/MM/yyyy")</td>
+                        <td>@l.GioKham.ToString(@"hh\:mm")</td>
+                        <td><small>@(l.LyDoKham ?? "—")</small></td>
+                        <td><span class="badge @ClassTrangThai(l.TrangThai)">@NhanTrangThai(l.TrangThai)</span></td>
+                        <td class="text-end">
+                            @if (l.TrangThai == DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan)
+                            {
+                                <form asp-action="XacNhan" method="post" class="d-inline"
+                                      onsubmit="return confirm('Xác nhận lịch hẹn này?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@l.MaLichHen" />
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-circle"></i> Xác nhận
+                                    </button>
+                                </form>
+                                <form asp-action="TuChoi" method="post" class="d-inline"
+                                      onsubmit="return confirm('Từ chối lịch hẹn này?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@l.MaLichHen" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i> Từ chối
+                                    </button>
+                                </form>
+                            }
+                            else if (l.TrangThai == DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan)
+                            {
+                                <a asp-action="NhapKetQua" asp-route-id="@l.MaLichHen" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-square"></i> Nhập kết quả
+                                </a>
+                                <form asp-action="TuChoi" method="post" class="d-inline"
+                                      onsubmit="return confirm('Hủy lịch hẹn này?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@l.MaLichHen" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i> Hủy
+                                    </button>
+                                </form>
+                            }
+                            else if (l.TrangThai == DatLichKhamBenh.Models.TrangThaiLichHen.DaKham)
+                            {
+                                <a asp-action="NhapKetQua" asp-route-id="@l.MaLichHen" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i> Sửa kết quả
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
