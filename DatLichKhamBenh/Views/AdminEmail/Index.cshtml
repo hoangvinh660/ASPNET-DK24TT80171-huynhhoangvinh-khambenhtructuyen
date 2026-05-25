@@ -1,0 +1,151 @@
+@model DatLichKhamBenh.Models.CauHinhEmail
+@{
+    ViewData["Title"] = "Cấu hình Email";
+    bool daCauHinh =
+        !string.IsNullOrWhiteSpace(Model.SenderEmail)
+        && !Model.SenderEmail.Contains("your-email", StringComparison.OrdinalIgnoreCase)
+        && !string.IsNullOrWhiteSpace(Model.SenderPassword)
+        && !Model.SenderPassword.Contains("app-password", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="row g-3">
+    <!-- Cot trai: trang thai + cong tac nhanh -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-toggle-on"></i> Trạng thái gửi mail</h6>
+
+                @if (!Model.BatEmail)
+                {
+                    <div class="alert alert-secondary mb-3">
+                        <i class="bi bi-bell-slash-fill"></i>
+                        <strong>Đã TẮT</strong> - Hệ thống không gửi email, chỉ ghi log.
+                    </div>
+                }
+                else if (!daCauHinh)
+                {
+                    <div class="alert alert-warning mb-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <strong>Đang BẬT</strong> nhưng <strong>chưa cấu hình</strong> SMTP thật<br />
+                        <small>Tạm thời ghi log thay vì gửi. Hãy điền email & App Password ở dưới.</small>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-success mb-3">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <strong>Đang BẬT</strong> và đã cấu hình - hệ thống gửi mail thật qua SMTP.
+                    </div>
+                }
+
+                <form asp-action="BatTat" method="post">
+                    @Html.AntiForgeryToken()
+                    @if (Model.BatEmail)
+                    {
+                        <button type="submit" class="btn btn-danger w-100"
+                                onclick="return confirm('Tắt gửi mail toàn hệ thống?');">
+                            <i class="bi bi-toggle-off"></i> Tắt gửi mail
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-toggle-on"></i> Bật gửi mail
+                        </button>
+                    }
+                </form>
+
+                <hr />
+
+                <h6 class="text-muted mb-2"><i class="bi bi-send"></i> Gửi mail thử</h6>
+                <form asp-action="GuiThu" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="email" name="emailNhan" class="form-control mb-2" placeholder="email-nhan@example.com" required />
+                    <button type="submit" class="btn btn-outline-primary w-100" @(Model.BatEmail ? "" : "disabled")>
+                        <i class="bi bi-envelope-arrow-up"></i> Gửi thử
+                    </button>
+                    @if (!Model.BatEmail)
+                    {
+                        <small class="text-muted d-block mt-1">Cần BẬT mail trước.</small>
+                    }
+                </form>
+
+                <hr />
+                <div class="small text-muted">
+                    <div><strong>Cập nhật lần cuối:</strong></div>
+                    <div>@Model.NgayCapNhat.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cot phai: form chinh sua chi tiet -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-gear"></i> Cấu hình SMTP</h6>
+                <form asp-action="Luu" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="MaCauHinh" />
+                    <input type="hidden" asp-for="BatEmail" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label asp-for="SmtpServer" class="form-label">SMTP Server</label>
+                            <input asp-for="SmtpServer" class="form-control" placeholder="smtp.gmail.com" />
+                            <span asp-validation-for="SmtpServer" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Port" class="form-label">Port</label>
+                            <input asp-for="Port" type="number" class="form-control" placeholder="587" />
+                            <span asp-validation-for="Port" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SenderName" class="form-label">Tên người gửi</label>
+                            <input asp-for="SenderName" class="form-control" />
+                            <span asp-validation-for="SenderName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SenderEmail" class="form-label">Email gửi</label>
+                            <input asp-for="SenderEmail" type="email" class="form-control" placeholder="ten-cua-ban@gmail.com" />
+                            <span asp-validation-for="SenderEmail" class="text-danger"></span>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">
+                                Mật khẩu / App Password
+                                <small class="text-muted">(để trống = giữ nguyên)</small>
+                            </label>
+                            <input asp-for="SenderPassword" type="password" class="form-control" autocomplete="new-password" value="" placeholder="@(string.IsNullOrEmpty(Model.SenderPassword) ? "Chưa đặt" : "•••••••• (đã có, để trống nếu không đổi)")" />
+                            <small class="text-muted">
+                                Với Gmail: bật 2-Step Verification và tạo App Password tại
+                                <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a>.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Lưu cấu hình
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h6 class="text-muted"><i class="bi bi-info-circle"></i> Cách hoạt động</h6>
+                <ol class="small mb-0">
+                    <li><strong>Tắt mail</strong>: 100% mail chỉ ghi vào log server (<code>[EMAIL-OFF]</code>), không gửi.</li>
+                    <li><strong>Bật mail nhưng chưa cấu hình</strong>: log <code>[EMAIL-DEV]</code>, không gửi - tiện demo offline.</li>
+                    <li><strong>Bật mail + cấu hình hợp lệ</strong>: gửi thật qua SMTP, log <code>[EMAIL] Da gui mail ...</code>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

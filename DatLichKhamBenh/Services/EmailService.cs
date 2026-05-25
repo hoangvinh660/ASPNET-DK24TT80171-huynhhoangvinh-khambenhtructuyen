@@ -1,39 +1,50 @@
 using DatLichKhamBenh.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace DatLichKhamBenh.Services;
 
 // Trien khai gui mail bang MailKit.
-// Khi EmailSettings chua duoc cau hinh (van la placeholder) thi log noi dung ra
-// console thay vi thuc su mo ket noi SMTP -> tien khi demo offline.
+// Doc cau hinh tu IEmailSettingsProvider (DB - bang CauHinhEmail).
+// 3 nhanh hanh vi:
+//   1) BatEmail = false (admin tat)          -> chi log [EMAIL-OFF], khong gui.
+//   2) BatEmail = true nhung chua cau hinh   -> log [EMAIL-DEV], khong gui (tien demo).
+//   3) BatEmail = true + cau hinh hop le     -> gui that qua SMTP.
 public class EmailService : IEmailService
 {
-    private readonly EmailSettings _settings;
+    private readonly IEmailSettingsProvider _provider;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IOptions<EmailSettings> options, ILogger<EmailService> logger)
+    public EmailService(IEmailSettingsProvider provider, ILogger<EmailService> logger)
     {
-        _settings = options.Value;
+        _provider = provider;
         _logger = logger;
     }
 
     public async Task SendAsync(string toEmail, string toName, string subject, string htmlBody)
     {
-        if (!_settings.IsConfigured)
+        var enabled = await _provider.IsEnabledAsync();
+        if (!enabled)
+        {
+            _logger.LogInformation(
+                "[EMAIL-OFF] Admin da tat email -> KHONG gui. To: {ToEmail} | Subject: {Subject}",
+                toEmail, subject);
+            return;
+        }
+
+        var settings = await _provider.GetAsync();
+        if (!settings.IsConfigured)
         {
             _logger.LogWarning(
                 "[EMAIL-DEV] EmailSettings chua duoc cau hinh -> KHONG gui mail." +
                 " To: {ToEmail} ({ToName}) | Subject: {Subject}\nBody:\n{Body}",
                 toEmail, toName, subject, htmlBody);
-            await Task.CompletedTask;
             return;
         }
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
+        message.From.Add(new MailboxAddress(settings.SenderName, settings.SenderEmail));
         message.To.Add(new MailboxAddress(toName, toEmail));
         message.Subject = subject;
 
@@ -43,8 +54,8 @@ public class EmailService : IEmailService
         using var smtp = new SmtpClient();
         try
         {
-            await smtp.ConnectAsync(_settings.SmtpServer, _settings.Port, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(_settings.SenderEmail, _settings.SenderPassword);
+            await smtp.ConnectAsync(settings.SmtpServer, settings.Port, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(settings.SenderEmail, settings.SenderPassword);
             await smtp.SendAsync(message);
             _logger.LogInformation("[EMAIL] Da gui mail toi {ToEmail} - {Subject}", toEmail, subject);
         }

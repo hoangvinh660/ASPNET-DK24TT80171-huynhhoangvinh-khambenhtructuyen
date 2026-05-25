@@ -1,9 +1,11 @@
+using DatLichKhamBenh.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace DatLichKhamBenh.Models;
 
 // Nap du lieu mau cho he thong (chay 1 lan luc startup neu DB rong).
-// Du lieu gom: 1 admin + 5 chuyen khoa + 5 bac si + 2 benh nhan.
+// Du lieu gom: 1 admin + 5 chuyen khoa + 5 bac si + 2 benh nhan + 1 cau hinh email.
 public static class SeedData
 {
     public static void Initialize(IServiceProvider services)
@@ -13,6 +15,23 @@ public static class SeedData
 
         // Bao dam DB ton tai va co schema moi nhat
         db.Database.Migrate();
+
+        // ---------- Seed cau hinh email (doc lap voi seed nguoi dung) ----------
+        if (!db.CauHinhEmails.Any())
+        {
+            var emailFallback = scope.ServiceProvider.GetRequiredService<IOptions<EmailSettings>>().Value;
+            db.CauHinhEmails.Add(new CauHinhEmail
+            {
+                BatEmail = true,
+                SmtpServer = emailFallback.SmtpServer,
+                Port = emailFallback.Port,
+                SenderName = emailFallback.SenderName,
+                SenderEmail = emailFallback.SenderEmail,
+                SenderPassword = emailFallback.SenderPassword,
+                NgayCapNhat = DateTime.Now
+            });
+            db.SaveChanges();
+        }
 
         // Neu da co nguoi dung -> coi nhu da seed roi, bo qua
         if (db.NguoiDungs.Any())

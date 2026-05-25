@@ -13,10 +13,12 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DatLichKhamBenh")));
 
 // Dang ky EmailService (MailKit gui mail qua Gmail SMTP).
-// Cau hinh trong appsettings.json -> "EmailSettings".
-// Neu chua dien SenderEmail/SenderPassword that, service se LOG ra console
-// thay vi gui (xem EmailSettings.IsConfigured trong Services/EmailSettings.cs).
+// Cau hinh DOC TU DB (bang CauHinhEmail) qua IEmailSettingsProvider.
+// Lan dau khi DB chua co record nao, provider fallback ve appsettings.json
+// -> "EmailSettings" (gia tri seed san khi SeedData.Initialize chay).
+// Admin co the chinh sua/tat o /Admin/Email.
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailSettingsProvider, EmailSettingsProvider>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Bat Session (luu thong tin tam thoi nhu gio dat lich da chon)

@@ -5,7 +5,10 @@
 # ---------- Cursor IDE ----------
 .cursor/
 .cursorrules
-.md
+
+# ---------- Markdown (khong day len GitHub) ----------
+*.md
+**/*.md
 # ---------- Visual Studio / VS Code / Rider ----------
 .vs/
 .vscode/
