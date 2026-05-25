@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatLichKhamBenh.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260525085532_InitialCreate")]
+    [Migration("20260525090745_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -66,7 +66,7 @@ namespace DatLichKhamBenh.Migrations
                     b.HasIndex("MaNguoiDung")
                         .IsUnique();
 
-                    b.ToTable("BacSis");
+                    b.ToTable("BacSi");
                 });
 
             modelBuilder.Entity("DatLichKhamBenh.Models.BenhNhan", b =>
@@ -96,7 +96,7 @@ namespace DatLichKhamBenh.Migrations
                     b.HasIndex("MaNguoiDung")
                         .IsUnique();
 
-                    b.ToTable("BenhNhans");
+                    b.ToTable("BenhNhan");
                 });
 
             modelBuilder.Entity("DatLichKhamBenh.Models.ChuyenKhoa", b =>
@@ -118,7 +118,7 @@ namespace DatLichKhamBenh.Migrations
 
                     b.HasKey("MaChuyenKhoa");
 
-                    b.ToTable("ChuyenKhoas");
+                    b.ToTable("ChuyenKhoa");
                 });
 
             modelBuilder.Entity("DatLichKhamBenh.Models.HoSoBenhAn", b =>
@@ -153,7 +153,7 @@ namespace DatLichKhamBenh.Migrations
                     b.HasIndex("MaLichHen")
                         .IsUnique();
 
-                    b.ToTable("HoSoBenhAns");
+                    b.ToTable("HoSoBenhAn");
                 });
 
             modelBuilder.Entity("DatLichKhamBenh.Models.LichHen", b =>
@@ -195,7 +195,7 @@ namespace DatLichKhamBenh.Migrations
                     b.HasIndex("MaBacSi", "NgayKham", "GioKham")
                         .IsUnique();
 
-                    b.ToTable("LichHens");
+                    b.ToTable("LichHen");
                 });
 
             modelBuilder.Entity("DatLichKhamBenh.Models.NguoiDung", b =>
@@ -249,7 +249,7 @@ namespace DatLichKhamBenh.Migrations
                     b.HasIndex("TenDangNhap")
                         .IsUnique();
 
-                    b.ToTable("NguoiDungs");
+                    b.ToTable("NguoiDung");
                 });
 
             modelBuilder.Entity("DatLichKhamBenh.Models.BacSi", b =>

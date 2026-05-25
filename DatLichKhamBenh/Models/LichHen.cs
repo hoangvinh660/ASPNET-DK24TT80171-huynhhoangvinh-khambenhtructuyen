@@ -13,6 +13,7 @@ public static class TrangThaiLichHen
 }
 
 // Lich hen kham benh giua benh nhan va bac si
+[Table("LichHen")]
 public class LichHen
 {
     [Key]

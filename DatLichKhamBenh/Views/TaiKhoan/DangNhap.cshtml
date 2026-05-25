@@ -1,0 +1,50 @@
+@model DatLichKhamBenh.Models.ViewModels.DangNhapViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                </h3>
+
+                <form asp-action="DangNhap" method="post">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                        <input asp-for="TenDangNhap" class="form-control" autocomplete="username" autofocus />
+                        <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MatKhau" class="form-label">Mật khẩu</label>
+                        <input asp-for="MatKhau" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="MatKhau" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="GhiNho" class="form-check-input" />
+                        <label asp-for="GhiNho" class="form-check-label">Ghi nhớ đăng nhập</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                </form>
+
+                <hr />
+                <p class="text-center mb-0">
+                    Chưa có tài khoản?
+                    <a asp-action="DangKy">Đăng ký ngay</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

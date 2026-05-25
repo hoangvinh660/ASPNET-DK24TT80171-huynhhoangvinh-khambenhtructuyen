@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatLichKhamBenh.Models;
 
 // Chuyen khoa kham benh (Noi, Ngoai, San, Nhi, Mat...)
+[Table("ChuyenKhoa")]
 public class ChuyenKhoa
 {
     [Key]

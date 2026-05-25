@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DatLichKhamBenh.Models;
 
 // Ho so benh nhan - lien ket 1-1 voi NguoiDung (VaiTro = "BenhNhan")
+[Table("BenhNhan")]
 public class BenhNhan
 {
     [Key]

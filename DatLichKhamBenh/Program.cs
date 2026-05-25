@@ -38,6 +38,9 @@ builder.Services
 
 var app = builder.Build();
 
+// Tu dong chay migration + nap du lieu mau (chi nap neu DB rong)
+SeedData.Initialize(app.Services);
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

@@ -12,7 +12,7 @@ namespace DatLichKhamBenh.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ChuyenKhoas",
+                name: "ChuyenKhoa",
                 columns: table => new
                 {
                     MaChuyenKhoa = table.Column<int>(type: "int", nullable: false)
@@ -22,11 +22,11 @@ namespace DatLichKhamBenh.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChuyenKhoas", x => x.MaChuyenKhoa);
+                    table.PrimaryKey("PK_ChuyenKhoa", x => x.MaChuyenKhoa);
                 });
 
             migrationBuilder.CreateTable(
-                name: "NguoiDungs",
+                name: "NguoiDung",
                 columns: table => new
                 {
                     MaNguoiDung = table.Column<int>(type: "int", nullable: false)
@@ -42,11 +42,11 @@ namespace DatLichKhamBenh.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NguoiDungs", x => x.MaNguoiDung);
+                    table.PrimaryKey("PK_NguoiDung", x => x.MaNguoiDung);
                 });
 
             migrationBuilder.CreateTable(
-                name: "BacSis",
+                name: "BacSi",
                 columns: table => new
                 {
                     MaBacSi = table.Column<int>(type: "int", nullable: false)
@@ -61,23 +61,23 @@ namespace DatLichKhamBenh.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BacSis", x => x.MaBacSi);
+                    table.PrimaryKey("PK_BacSi", x => x.MaBacSi);
                     table.ForeignKey(
-                        name: "FK_BacSis_ChuyenKhoas_MaChuyenKhoa",
+                        name: "FK_BacSi_ChuyenKhoa_MaChuyenKhoa",
                         column: x => x.MaChuyenKhoa,
-                        principalTable: "ChuyenKhoas",
+                        principalTable: "ChuyenKhoa",
                         principalColumn: "MaChuyenKhoa",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_BacSis_NguoiDungs_MaNguoiDung",
+                        name: "FK_BacSi_NguoiDung_MaNguoiDung",
                         column: x => x.MaNguoiDung,
-                        principalTable: "NguoiDungs",
+                        principalTable: "NguoiDung",
                         principalColumn: "MaNguoiDung",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "BenhNhans",
+                name: "BenhNhan",
                 columns: table => new
                 {
                     MaBenhNhan = table.Column<int>(type: "int", nullable: false)
@@ -89,17 +89,17 @@ namespace DatLichKhamBenh.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BenhNhans", x => x.MaBenhNhan);
+                    table.PrimaryKey("PK_BenhNhan", x => x.MaBenhNhan);
                     table.ForeignKey(
-                        name: "FK_BenhNhans_NguoiDungs_MaNguoiDung",
+                        name: "FK_BenhNhan_NguoiDung_MaNguoiDung",
                         column: x => x.MaNguoiDung,
-                        principalTable: "NguoiDungs",
+                        principalTable: "NguoiDung",
                         principalColumn: "MaNguoiDung",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LichHens",
+                name: "LichHen",
                 columns: table => new
                 {
                     MaLichHen = table.Column<int>(type: "int", nullable: false)
@@ -114,23 +114,23 @@ namespace DatLichKhamBenh.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LichHens", x => x.MaLichHen);
+                    table.PrimaryKey("PK_LichHen", x => x.MaLichHen);
                     table.ForeignKey(
-                        name: "FK_LichHens_BacSis_MaBacSi",
+                        name: "FK_LichHen_BacSi_MaBacSi",
                         column: x => x.MaBacSi,
-                        principalTable: "BacSis",
+                        principalTable: "BacSi",
                         principalColumn: "MaBacSi",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_LichHens_BenhNhans_MaBenhNhan",
+                        name: "FK_LichHen_BenhNhan_MaBenhNhan",
                         column: x => x.MaBenhNhan,
-                        principalTable: "BenhNhans",
+                        principalTable: "BenhNhan",
                         principalColumn: "MaBenhNhan",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "HoSoBenhAns",
+                name: "HoSoBenhAn",
                 columns: table => new
                 {
                     MaHoSo = table.Column<int>(type: "int", nullable: false)
@@ -143,58 +143,58 @@ namespace DatLichKhamBenh.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HoSoBenhAns", x => x.MaHoSo);
+                    table.PrimaryKey("PK_HoSoBenhAn", x => x.MaHoSo);
                     table.ForeignKey(
-                        name: "FK_HoSoBenhAns_LichHens_MaLichHen",
+                        name: "FK_HoSoBenhAn_LichHen_MaLichHen",
                         column: x => x.MaLichHen,
-                        principalTable: "LichHens",
+                        principalTable: "LichHen",
                         principalColumn: "MaLichHen",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BacSis_MaChuyenKhoa",
-                table: "BacSis",
+                name: "IX_BacSi_MaChuyenKhoa",
+                table: "BacSi",
                 column: "MaChuyenKhoa");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BacSis_MaNguoiDung",
-                table: "BacSis",
+                name: "IX_BacSi_MaNguoiDung",
+                table: "BacSi",
                 column: "MaNguoiDung",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BenhNhans_MaNguoiDung",
-                table: "BenhNhans",
+                name: "IX_BenhNhan_MaNguoiDung",
+                table: "BenhNhan",
                 column: "MaNguoiDung",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_HoSoBenhAns_MaLichHen",
-                table: "HoSoBenhAns",
+                name: "IX_HoSoBenhAn_MaLichHen",
+                table: "HoSoBenhAn",
                 column: "MaLichHen",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LichHens_MaBacSi_NgayKham_GioKham",
-                table: "LichHens",
+                name: "IX_LichHen_MaBacSi_NgayKham_GioKham",
+                table: "LichHen",
                 columns: new[] { "MaBacSi", "NgayKham", "GioKham" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_LichHens_MaBenhNhan",
-                table: "LichHens",
+                name: "IX_LichHen_MaBenhNhan",
+                table: "LichHen",
                 column: "MaBenhNhan");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NguoiDungs_Email",
-                table: "NguoiDungs",
+                name: "IX_NguoiDung_Email",
+                table: "NguoiDung",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NguoiDungs_TenDangNhap",
-                table: "NguoiDungs",
+                name: "IX_NguoiDung_TenDangNhap",
+                table: "NguoiDung",
                 column: "TenDangNhap",
                 unique: true);
         }
@@ -203,22 +203,22 @@ namespace DatLichKhamBenh.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "HoSoBenhAns");
+                name: "HoSoBenhAn");
 
             migrationBuilder.DropTable(
-                name: "LichHens");
+                name: "LichHen");
 
             migrationBuilder.DropTable(
-                name: "BacSis");
+                name: "BacSi");
 
             migrationBuilder.DropTable(
-                name: "BenhNhans");
+                name: "BenhNhan");
 
             migrationBuilder.DropTable(
-                name: "ChuyenKhoas");
+                name: "ChuyenKhoa");
 
             migrationBuilder.DropTable(
-                name: "NguoiDungs");
+                name: "NguoiDung");
         }
     }
 }
