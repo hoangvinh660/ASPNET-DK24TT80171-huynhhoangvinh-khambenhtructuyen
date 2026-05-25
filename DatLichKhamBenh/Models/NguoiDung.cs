@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DatLichKhamBenh.Models;
 
 // Tai khoan he thong, dung chung cho Admin/BacSi/BenhNhan
+[Table("NguoiDung")]
 public class NguoiDung
 {
     [Key]

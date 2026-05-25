@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DatLichKhamBenh.Models;
 
 // Ho so benh an - sinh ra sau khi bac si kham xong cho 1 LichHen
+[Table("HoSoBenhAn")]
 public class HoSoBenhAn
 {
     [Key]
