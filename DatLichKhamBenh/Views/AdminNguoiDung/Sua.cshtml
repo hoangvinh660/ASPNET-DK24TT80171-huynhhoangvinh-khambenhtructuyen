@@ -1,0 +1,62 @@
+@model DatLichKhamBenh.Models.NguoiDung
+@{
+    ViewData["Title"] = $"Sửa tài khoản #{Model.MaNguoiDung}";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Sua" asp-route-id="@Model.MaNguoiDung" method="post">
+            <input type="hidden" asp-for="MaNguoiDung" />
+            <input type="hidden" asp-for="NgayTao" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                    <input asp-for="TenDangNhap" class="form-control" />
+                    <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Mật khẩu mới (để trống = không đổi)</label>
+                    <input name="matKhauMoi" type="password" class="form-control" autocomplete="new-password" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="HoTen" class="form-label">Họ và tên</label>
+                    <input asp-for="HoTen" class="form-control" />
+                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                    <input asp-for="SoDienThoai" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="VaiTro" class="form-label">Vai trò</label>
+                    <select asp-for="VaiTro" class="form-select">
+                        <option value="Admin">Admin</option>
+                        <option value="BacSi">Bác sĩ</option>
+                        <option value="BenhNhan">Bệnh nhân</option>
+                    </select>
+                    <span asp-validation-for="VaiTro" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="form-check">
+                        <input asp-for="DaKhoa" class="form-check-input" />
+                        <label asp-for="DaKhoa" class="form-check-label">Khóa tài khoản</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Cập nhật</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

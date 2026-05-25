@@ -1,0 +1,129 @@
+@model List<DatLichKhamBenh.Models.LichHen>
+@{
+    ViewData["Title"] = "Quản lý lịch hẹn";
+    var trangThaiLoc = ViewBag.TrangThai as string;
+    var maBacSiLoc = ViewBag.MaBacSi as int?;
+    var tuNgay = ViewBag.TuNgay as string;
+    var denNgay = ViewBag.DenNgay as string;
+    var dsBacSi = ((IEnumerable<dynamic>)ViewBag.DsBacSi).ToList();
+}
+
+@functions {
+    string LblTrangThai(string t) => t switch
+    {
+        DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan => "Chờ xác nhận",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan => "Đã xác nhận",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaKham => "Đã khám",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy => "Đã hủy",
+        _ => t
+    };
+
+    string ClsTrangThai(string t) => t switch
+    {
+        DatLichKhamBenh.Models.TrangThaiLichHen.ChoXacNhan => "bg-warning text-dark",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaXacNhan => "bg-info text-dark",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaKham => "bg-success",
+        DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
+}
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small">Bác sĩ</label>
+                <select name="maBacSi" class="form-select form-select-sm">
+                    <option value="">Tất cả</option>
+                    @foreach (var b in dsBacSi)
+                    {
+                        <option value="@b.MaBacSi" selected="@(maBacSiLoc == (int)b.MaBacSi)">@b.HoTen</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Trạng thái</label>
+                <select name="trangThai" class="form-select form-select-sm">
+                    <option value="">Tất cả</option>
+                    <option value="ChoXacNhan" selected="@(trangThaiLoc == "ChoXacNhan")">Chờ xác nhận</option>
+                    <option value="DaXacNhan" selected="@(trangThaiLoc == "DaXacNhan")">Đã xác nhận</option>
+                    <option value="DaKham" selected="@(trangThaiLoc == "DaKham")">Đã khám</option>
+                    <option value="DaHuy" selected="@(trangThaiLoc == "DaHuy")">Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Từ ngày</label>
+                <input type="date" name="tuNgay" value="@tuNgay" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Đến ngày</label>
+                <input type="date" name="denNgay" value="@denNgay" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-primary btn-sm w-100"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="col-md-2">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm w-100">Xóa lọc</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Bệnh nhân</th>
+                    <th>Bác sĩ</th>
+                    <th>Chuyên khoa</th>
+                    <th>Ngày</th>
+                    <th>Giờ</th>
+                    <th>Lý do</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày đặt</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td>@l.MaLichHen</td>
+                        <td><small>@l.BenhNhan?.NguoiDung?.HoTen</small></td>
+                        <td><small>@l.BacSi?.NguoiDung?.HoTen</small></td>
+                        <td><small>@l.BacSi?.ChuyenKhoa?.TenChuyenKhoa</small></td>
+                        <td>@l.NgayKham.ToString("dd/MM/yyyy")</td>
+                        <td>@l.GioKham.ToString(@"hh\:mm")</td>
+                        <td><small>@(l.LyDoKham ?? "—")</small></td>
+                        <td><span class="badge @ClsTrangThai(l.TrangThai)">@LblTrangThai(l.TrangThai)</span></td>
+                        <td><small>@l.NgayDat.ToString("dd/MM HH:mm")</small></td>
+                        <td class="text-end">
+                            @if (l.TrangThai != DatLichKhamBenh.Models.TrangThaiLichHen.DaKham &&
+                                 l.TrangThai != DatLichKhamBenh.Models.TrangThaiLichHen.DaHuy)
+                            {
+                                <form asp-action="Huy" method="post" class="d-inline"
+                                      onsubmit="return confirm('Hủy lịch hẹn này?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@l.MaLichHen" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i> Hủy
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="10" class="text-center text-muted">Không có lịch hẹn nào</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

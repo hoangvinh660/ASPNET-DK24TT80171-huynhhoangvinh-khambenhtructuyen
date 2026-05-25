@@ -1,0 +1,75 @@
+@model List<DatLichKhamBenh.Models.BacSi>
+@{
+    ViewData["Title"] = "Quản lý bác sĩ";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+            <h5 class="mb-0"><i class="bi bi-person-vcard"></i> Danh sách bác sĩ</h5>
+            <a asp-action="Tao" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Thêm bác sĩ
+            </a>
+        </div>
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Họ tên</th>
+                    <th>Học vị</th>
+                    <th>Chuyên khoa</th>
+                    <th>Email / SĐT</th>
+                    <th class="text-end">Giá khám</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td>@b.MaBacSi</td>
+                        <td>
+                            <strong>@b.NguoiDung?.HoTen</strong><br />
+                            <small class="text-muted">@b.NguoiDung?.TenDangNhap</small>
+                        </td>
+                        <td><small>@b.HocVi</small></td>
+                        <td><small>@b.ChuyenKhoa?.TenChuyenKhoa</small></td>
+                        <td class="small">
+                            <div>@b.NguoiDung?.Email</div>
+                            <div class="text-muted">@(b.NguoiDung?.SoDienThoai ?? "—")</div>
+                        </td>
+                        <td class="text-end">@b.GiaKham.ToString("N0") đ</td>
+                        <td>
+                            @if (b.NguoiDung?.DaKhoa == true)
+                            {
+                                <span class="badge bg-danger">Đã khóa</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Sua" asp-route-id="@b.MaBacSi" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form asp-action="Xoa" method="post" class="d-inline"
+                                  onsubmit="return confirm('Xóa bác sĩ và tài khoản liên quan?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@b.MaBacSi" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted">Chưa có bác sĩ nào</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
