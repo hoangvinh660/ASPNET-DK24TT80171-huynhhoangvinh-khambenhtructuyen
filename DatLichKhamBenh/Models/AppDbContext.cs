@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<BenhNhan> BenhNhans => Set<BenhNhan>();
     public DbSet<LichHen> LichHens => Set<LichHen>();
     public DbSet<HoSoBenhAn> HoSoBenhAns => Set<HoSoBenhAn>();
+    public DbSet<CauHinhEmail> CauHinhEmails => Set<CauHinhEmail>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
