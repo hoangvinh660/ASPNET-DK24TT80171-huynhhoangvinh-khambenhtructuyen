@@ -1,0 +1,157 @@
+@model DatLichKhamBenh.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Tổng người dùng</div>
+                <h3 class="mb-0">@Model.TongNguoiDung</h3>
+                <div class="small text-muted">
+                    @Model.TongBacSi BS · @Model.TongBenhNhan BN
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm" style="border-left-color:#10b981;">
+            <div class="card-body">
+                <div class="text-muted small">Chuyên khoa</div>
+                <h3 class="mb-0">@Model.TongChuyenKhoa</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm" style="border-left-color:#f59e0b;">
+            <div class="card-body">
+                <div class="text-muted small">Tổng lịch hẹn</div>
+                <h3 class="mb-0">@Model.TongLichHen</h3>
+                <div class="small text-muted">
+                    Chờ XN: @Model.LichChoXacNhan · Đã khám: @Model.LichDaKham
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm" style="border-left-color:#ef4444;">
+            <div class="card-body">
+                <div class="text-muted small">Đã hủy</div>
+                <h3 class="mb-0">@Model.LichDaHuy</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-bar-chart"></i> Lịch hẹn đặt trong 7 ngày gần đây</h6>
+                <canvas id="chartLichTheoNgay" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-pie-chart"></i> Phân bố trạng thái lịch hẹn</h6>
+                <canvas id="chartTrangThai" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-trophy"></i> Top 5 bác sĩ nhiều lịch nhất</h6>
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr><th>#</th><th>Bác sĩ</th><th>Chuyên khoa</th><th class="text-end">Lịch hẹn</th></tr>
+                    </thead>
+                    <tbody>
+                        @{ var i = 1; }
+                        @foreach (var bs in Model.TopBacSi)
+                        {
+                            <tr>
+                                <td>@(i++)</td>
+                                <td>@bs.HoTen</td>
+                                <td><small class="text-muted">@bs.ChuyenKhoa</small></td>
+                                <td class="text-end"><span class="badge bg-primary">@bs.SoLichHen</span></td>
+                            </tr>
+                        }
+                        @if (!Model.TopBacSi.Any())
+                        {
+                            <tr><td colspan="4" class="text-center text-muted">Chưa có dữ liệu</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted mb-3"><i class="bi bi-clock-history"></i> 5 lịch hẹn mới nhất</h6>
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr><th>#</th><th>Bệnh nhân</th><th>Bác sĩ</th><th>Ngày khám</th><th>Trạng thái</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var l in Model.LichHenMoiNhat)
+                        {
+                            <tr>
+                                <td>@l.MaLichHen</td>
+                                <td><small>@l.BenhNhan?.NguoiDung?.HoTen</small></td>
+                                <td><small>@l.BacSi?.NguoiDung?.HoTen</small></td>
+                                <td><small>@l.NgayKham.ToString("dd/MM") @l.GioKham.ToString(@"hh\:mm")</small></td>
+                                <td><small>@l.TrangThai</small></td>
+                            </tr>
+                        }
+                        @if (!Model.LichHenMoiNhat.Any())
+                        {
+                            <tr><td colspan="5" class="text-center text-muted">Chưa có lịch hẹn nào</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const dataNgay = {
+        labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.NgayLabels)),
+        datasets: [{
+            label: 'Số lịch đặt',
+            data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.LichTheoNgay)),
+            backgroundColor: '#3b82f6'
+        }]
+    };
+    new Chart(document.getElementById('chartLichTheoNgay'), {
+        type: 'bar',
+        data: dataNgay,
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    const dataTrangThai = {
+        labels: ['Chờ xác nhận', 'Đã xác nhận', 'Đã khám', 'Đã hủy'],
+        datasets: [{
+            data: [@Model.LichChoXacNhan, @Model.LichDaXacNhan, @Model.LichDaKham, @Model.LichDaHuy],
+            backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444']
+        }]
+    };
+    new Chart(document.getElementById('chartTrangThai'), {
+        type: 'doughnut',
+        data: dataTrangThai,
+        options: { responsive: true }
+    });
+</script>
+}

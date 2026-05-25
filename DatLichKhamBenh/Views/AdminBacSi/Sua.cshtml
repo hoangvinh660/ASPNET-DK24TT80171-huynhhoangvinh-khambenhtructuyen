@@ -1,0 +1,80 @@
+@model DatLichKhamBenh.Models.ViewModels.BacSiAdminViewModel
+@{
+    ViewData["Title"] = $"Sửa bác sĩ #{Model.MaBacSi}";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Sua" asp-route-id="@Model.MaBacSi" method="post">
+            <input type="hidden" asp-for="MaBacSi" />
+            <input type="hidden" asp-for="MaNguoiDung" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <h6 class="text-muted">Tài khoản</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="TenDangNhap" class="form-label">Tên đăng nhập</label>
+                    <input asp-for="TenDangNhap" class="form-control" />
+                    <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="MatKhau" class="form-label">Mật khẩu mới (để trống = không đổi)</label>
+                    <input asp-for="MatKhau" type="password" class="form-control" />
+                    <span asp-validation-for="MatKhau" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="HoTen" class="form-label">Họ và tên</label>
+                    <input asp-for="HoTen" class="form-control" />
+                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                    <input asp-for="SoDienThoai" class="form-control" />
+                </div>
+            </div>
+
+            <hr />
+            <h6 class="text-muted">Hồ sơ bác sĩ</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="MaChuyenKhoa" class="form-label">Chuyên khoa</label>
+                    <select asp-for="MaChuyenKhoa" asp-items="ViewBag.DsChuyenKhoa" class="form-select"></select>
+                    <span asp-validation-for="MaChuyenKhoa" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="HocVi" class="form-label">Học vị</label>
+                    <input asp-for="HocVi" class="form-control" />
+                    <span asp-validation-for="HocVi" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="GiaKham" class="form-label">Giá khám (VND)</label>
+                    <input asp-for="GiaKham" type="number" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="HinhAnh" class="form-label">Đường dẫn ảnh</label>
+                    <input asp-for="HinhAnh" class="form-control" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="KinhNghiem" class="form-label">Kinh nghiệm</label>
+                    <input asp-for="KinhNghiem" class="form-control" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="MoTa" class="form-label">Mô tả</label>
+                    <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Cập nhật</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

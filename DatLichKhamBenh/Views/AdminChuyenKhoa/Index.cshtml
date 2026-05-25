@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Quản lý chuyên khoa";
+    var ds = (IEnumerable<dynamic>)ViewBag.DanhSach;
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+            <h5 class="mb-0"><i class="bi bi-grid"></i> Danh sách chuyên khoa</h5>
+            <a asp-action="Tao" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Thêm chuyên khoa
+            </a>
+        </div>
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tên chuyên khoa</th>
+                    <th>Mô tả</th>
+                    <th class="text-center">Số BS</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in ds)
+                {
+                    <tr>
+                        <td>@c.MaChuyenKhoa</td>
+                        <td><strong>@c.TenChuyenKhoa</strong></td>
+                        <td><small class="text-muted">@(c.MoTa ?? "—")</small></td>
+                        <td class="text-center"><span class="badge bg-info">@c.SoBacSi</span></td>
+                        <td class="text-end">
+                            <a asp-action="Sua" asp-route-id="@c.MaChuyenKhoa" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form asp-action="Xoa" method="post" class="d-inline"
+                                  onsubmit="return confirm('Xóa chuyên khoa này?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@c.MaChuyenKhoa" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!ds.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted">Chưa có chuyên khoa nào</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

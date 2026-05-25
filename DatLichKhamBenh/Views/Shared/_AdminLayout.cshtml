@@ -1,0 +1,116 @@
+@{
+    var hoTen = User.FindFirst("HoTen")?.Value ?? User.Identity?.Name;
+    var path = (Context.Request.Path.Value ?? "").ToLowerInvariant();
+    string ActiveIf(string prefix) => path.StartsWith(prefix) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        body { background: #f4f6f9; }
+        .admin-sidebar {
+            min-height: 100vh;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        .admin-sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 10px 16px;
+            display: block;
+            border-left: 3px solid transparent;
+        }
+        .admin-sidebar a:hover { background: #334155; color: #fff; }
+        .admin-sidebar a.active { background: #0f172a; color: #fff; border-left-color: #3b82f6; }
+        .admin-sidebar .brand {
+            padding: 18px 16px;
+            background: #0f172a;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .admin-content { padding: 20px 24px; }
+        .stat-card { border-left: 4px solid #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3 col-lg-2 px-0 admin-sidebar">
+                <div class="brand">
+                    <i class="bi bi-hospital"></i> ADMIN PANEL
+                </div>
+                <nav class="nav flex-column py-2">
+                    <a class="@ActiveIf("/admin/dashboard")" href="/Admin/Dashboard">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                    <a class="@ActiveIf("/admin/chuyenkhoa")" href="/Admin/ChuyenKhoa">
+                        <i class="bi bi-grid"></i> Chuyên khoa
+                    </a>
+                    <a class="@ActiveIf("/admin/bacsi")" href="/Admin/BacSi">
+                        <i class="bi bi-person-vcard"></i> Bác sĩ
+                    </a>
+                    <a class="@ActiveIf("/admin/nguoidung")" href="/Admin/NguoiDung">
+                        <i class="bi bi-people"></i> Người dùng
+                    </a>
+                    <a class="@ActiveIf("/admin/lichhen")" href="/Admin/LichHen">
+                        <i class="bi bi-calendar-week"></i> Lịch hẹn
+                    </a>
+                    <hr class="text-secondary" />
+                    <a href="/TrangChu" class="text-info">
+                        <i class="bi bi-house"></i> Về trang chủ
+                    </a>
+                </nav>
+            </aside>
+
+            <main class="col-md-9 col-lg-10 admin-content">
+                <header class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-3">
+                    <h5 class="mb-0">@ViewData["Title"]</h5>
+                    <div class="dropdown">
+                        <a class="text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                            <i class="bi bi-person-circle"></i> @hoTen
+                            <span class="badge bg-primary">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </header>
+
+                @if (TempData["ThongBao"] is string thongBao)
+                {
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="bi bi-check-circle-fill"></i> @thongBao
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["LoiThongBao"] is string loi)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-triangle-fill"></i> @loi
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

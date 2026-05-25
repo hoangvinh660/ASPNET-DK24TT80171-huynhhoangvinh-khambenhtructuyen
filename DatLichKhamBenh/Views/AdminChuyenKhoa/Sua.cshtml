@@ -1,0 +1,27 @@
+@model DatLichKhamBenh.Models.ChuyenKhoa
+@{
+    ViewData["Title"] = $"Sửa chuyên khoa #{Model.MaChuyenKhoa}";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Sua" method="post">
+            <input type="hidden" asp-for="MaChuyenKhoa" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+            <div class="mb-3">
+                <label asp-for="TenChuyenKhoa" class="form-label">Tên chuyên khoa</label>
+                <input asp-for="TenChuyenKhoa" class="form-control" />
+                <span asp-validation-for="TenChuyenKhoa" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="MoTa" class="form-label">Mô tả</label>
+                <textarea asp-for="MoTa" rows="3" class="form-control"></textarea>
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Cập nhật</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
