@@ -10,4 +10,7 @@ public interface IBacSiImageService
 
     /// <summary>Xoa file anh cu (bo qua anh mac dinh)</summary>
     void XoaAnh(string? duongDan);
+
+    /// <summary>Tao thu muc va file anh mac dinh neu chua co</summary>
+    void DamBaoAnhMacDinhTonTai();
 }

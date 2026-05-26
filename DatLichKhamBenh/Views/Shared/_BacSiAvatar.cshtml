@@ -1,8 +1,13 @@
 @model string?
 @{
     var url = BacSiAnh.LayUrlAnh(Model);
+    var anhMacDinh = BacSiAnh.LayUrlAnh(null);
+    var laAnhMacDinh = string.Equals(url, anhMacDinh, StringComparison.OrdinalIgnoreCase);
     var cssClass = ViewData["AvatarClass"] as string ?? "rounded-circle object-fit-cover border";
+    if (laAnhMacDinh)
+        cssClass += " bg-light";
     var size = ViewData["AvatarSize"] as string ?? "64px";
-    var alt = ViewData["AvatarAlt"] as string ?? "Ảnh bác sĩ";
+    var alt = ViewData["AvatarAlt"] as string ?? (laAnhMacDinh ? "Ảnh mặc định bác sĩ" : "Ảnh bác sĩ");
 }
-<img src="@url" alt="@alt" class="@cssClass" style="width:@size;height:@size;object-fit:cover;" loading="lazy" />
+<img src="@url" alt="@alt" class="@cssClass" style="width:@size;height:@size;object-fit:cover;"
+     loading="lazy" onerror="this.onerror=null;this.src='@anhMacDinh';" />
