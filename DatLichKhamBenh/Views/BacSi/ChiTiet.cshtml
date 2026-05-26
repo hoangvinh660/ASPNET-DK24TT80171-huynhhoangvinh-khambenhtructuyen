@@ -19,7 +19,8 @@
     <div class="card-body p-4">
         <div class="row">
             <div class="col-md-3 text-center">
-                <i class="bi bi-person-circle text-primary" style="font-size: 8rem;"></i>
+                <partial name="_BacSiAvatar" model="Model.HinhAnh"
+                         view-data='new ViewDataDictionary(ViewData) { { "AvatarSize", "160px" }, { "AvatarClass", "rounded-circle object-fit-cover border shadow-sm" } }' />
             </div>
             <div class="col-md-9">
                 <h2 class="mb-1">@Model.HocVi @Model.NguoiDung?.HoTen</h2>

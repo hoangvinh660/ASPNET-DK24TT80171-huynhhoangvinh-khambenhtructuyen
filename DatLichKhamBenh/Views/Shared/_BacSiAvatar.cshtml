@@ -1,0 +1,8 @@
+@model string?
+@{
+    var url = BacSiAnh.LayUrlAnh(Model);
+    var cssClass = ViewData["AvatarClass"] as string ?? "rounded-circle object-fit-cover border";
+    var size = ViewData["AvatarSize"] as string ?? "64px";
+    var alt = ViewData["AvatarAlt"] as string ?? "Ảnh bác sĩ";
+}
+<img src="@url" alt="@alt" class="@cssClass" style="width:@size;height:@size;object-fit:cover;" loading="lazy" />

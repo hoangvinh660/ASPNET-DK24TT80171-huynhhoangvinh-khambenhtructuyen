@@ -5,7 +5,7 @@
 
 <div class="card shadow-sm">
     <div class="card-body">
-        <form asp-action="Sua" asp-route-id="@Model.MaBacSi" method="post">
+        <form asp-action="Sua" asp-route-id="@Model.MaBacSi" method="post" enctype="multipart/form-data">
             <input type="hidden" asp-for="MaBacSi" />
             <input type="hidden" asp-for="MaNguoiDung" />
             <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
@@ -55,10 +55,7 @@
                     <label asp-for="GiaKham" class="form-label">Giá khám (VND)</label>
                     <input asp-for="GiaKham" type="number" class="form-control" />
                 </div>
-                <div class="col-md-6">
-                    <label asp-for="HinhAnh" class="form-label">Đường dẫn ảnh</label>
-                    <input asp-for="HinhAnh" class="form-control" />
-                </div>
+                <partial name="_FormAnhDaiDien" />
                 <div class="col-12">
                     <label asp-for="KinhNghiem" class="form-label">Kinh nghiệm</label>
                     <input asp-for="KinhNghiem" class="form-control" />

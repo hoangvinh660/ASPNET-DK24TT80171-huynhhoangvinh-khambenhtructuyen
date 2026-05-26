@@ -15,6 +15,7 @@
             <thead class="table-light">
                 <tr>
                     <th>#</th>
+                    <th>Ảnh</th>
                     <th>Họ tên</th>
                     <th>Học vị</th>
                     <th>Chuyên khoa</th>
@@ -29,6 +30,10 @@
                 {
                     <tr>
                         <td>@b.MaBacSi</td>
+                        <td>
+                            <partial name="_BacSiAvatar" model="b.HinhAnh"
+                                     view-data='new ViewDataDictionary(ViewData) { { "AvatarSize", "40px" } }' />
+                        </td>
                         <td>
                             <strong>@b.NguoiDung?.HoTen</strong><br />
                             <small class="text-muted">@b.NguoiDung?.TenDangNhap</small>
@@ -67,7 +72,7 @@
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="8" class="text-center text-muted">Chưa có bác sĩ nào</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted">Chưa có bác sĩ nào</td></tr>
                 }
             </tbody>
         </table>

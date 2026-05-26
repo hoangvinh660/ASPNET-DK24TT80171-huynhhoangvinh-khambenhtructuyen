@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace DatLichKhamBenh.Models.ViewModels;
 
@@ -54,9 +55,12 @@ public class BacSiAdminViewModel
     [Display(Name = "Mo ta")]
     public string? MoTa { get; set; }
 
+    // Duong dan anh hien tai (an field khi sua)
     [StringLength(255)]
-    [Display(Name = "Duong dan anh")]
     public string? HinhAnh { get; set; }
+
+    [Display(Name = "Ảnh đại diện")]
+    public IFormFile? AnhDaiDien { get; set; }
 
     [Required(ErrorMessage = "Vui long nhap gia kham")]
     [Range(0, 100_000_000, ErrorMessage = "Gia kham phai >= 0")]

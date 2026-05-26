@@ -1,0 +1,21 @@
+@model DatLichKhamBenh.Models.ViewModels.BacSiAdminViewModel
+
+<div class="col-12">
+    <label asp-for="AnhDaiDien" class="form-label">Ảnh đại diện</label>
+    <div class="d-flex flex-wrap align-items-start gap-3">
+        <div>
+            <partial name="_BacSiAvatar" model="Model.HinhAnh"
+                     view-data='new ViewDataDictionary(ViewData) { { "AvatarSize", "96px" } }' />
+            <div class="small text-muted mt-1">Ảnh hiện tại</div>
+        </div>
+        <div class="flex-grow-1">
+            <input asp-for="AnhDaiDien" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+            <input type="hidden" asp-for="HinhAnh" />
+            <div class="form-text">
+                JPG, PNG, WEBP — tối đa @ViewBag.UploadMb MB.
+                Định dạng: @ViewBag.DinhDangAnh
+            </div>
+            <span asp-validation-for="AnhDaiDien" class="text-danger"></span>
+        </div>
+    </div>
+</div>

@@ -28,7 +28,8 @@
                                         data-gia="@bs.GiaKham"
                                         data-chuyenkhoa="@bs.ChuyenKhoa?.TenChuyenKhoa"
                                         data-hocvi="@bs.HocVi"
-                                        data-hoten="@bs.NguoiDung?.HoTen">
+                                        data-hoten="@bs.NguoiDung?.HoTen"
+                                        data-hinhanh="@BacSiAnh.LayUrlAnh(bs.HinhAnh)">
                                     @bs.HocVi @bs.NguoiDung?.HoTen — @bs.ChuyenKhoa?.TenChuyenKhoa
                                 </option>
                             }
@@ -77,7 +78,8 @@
                         @if (Model.BacSiHienTai is not null)
                         {
                             <div class="d-flex gap-3">
-                                <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+                                <partial name="_BacSiAvatar" model="Model.BacSiHienTai.HinhAnh"
+                                         view-data='new ViewDataDictionary(ViewData) { { "AvatarSize", "64px" } }' />
                                 <div>
                                     <h6 class="mb-1">@Model.BacSiHienTai.HocVi @Model.BacSiHienTai.NguoiDung?.HoTen</h6>
                                     <span class="badge bg-info text-dark">@Model.BacSiHienTai.ChuyenKhoa?.TenChuyenKhoa</span>
@@ -117,9 +119,10 @@
                 return;
             }
             var gia = parseInt(opt.dataset.gia || '0', 10).toLocaleString('vi-VN');
+            var anh = opt.dataset.hinhanh || '/images/bacsi/default-avatar.svg';
             box.innerHTML =
                 '<div class="d-flex gap-3">' +
-                '  <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>' +
+                '  <img src="' + anh + '" alt="Ảnh bác sĩ" class="rounded-circle border object-fit-cover" style="width:64px;height:64px;" />' +
                 '  <div>' +
                 '    <h6 class="mb-1">' + opt.dataset.hocvi + ' ' + opt.dataset.hoten + '</h6>' +
                 '    <span class="badge bg-info text-dark">' + opt.dataset.chuyenkhoa + '</span>' +

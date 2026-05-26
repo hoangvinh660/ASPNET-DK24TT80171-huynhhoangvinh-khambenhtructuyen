@@ -46,7 +46,8 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex gap-3">
-                        <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+                        <partial name="_BacSiAvatar" model="bs.HinhAnh"
+                                 view-data='new ViewDataDictionary(ViewData) { { "AvatarSize", "64px" } }' />
                         <div class="flex-grow-1">
                             <h6 class="mb-0">@bs.HocVi @bs.NguoiDung?.HoTen</h6>
                             <small class="badge bg-info text-dark">@bs.ChuyenKhoa?.TenChuyenKhoa</small>
