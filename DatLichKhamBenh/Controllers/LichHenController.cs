@@ -6,6 +6,7 @@ using DatLichKhamBenh.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace DatLichKhamBenh.Controllers;
 
@@ -52,16 +53,16 @@ public class LichHenController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DatLich(DatLichViewModel model)
     {
-        // Validate khung gio (phai nam trong DatLichViewModel.KhungGioMau)
+        // Validate khung giờ (phải nằm trong DatLichViewModel.KhungGioMau)
         if (!DatLichViewModel.KhungGioMau.Contains(model.GioKhamStr))
         {
-            ModelState.AddModelError(nameof(model.GioKhamStr), "Khung gio khong hop le");
+            ModelState.AddModelError(nameof(model.GioKhamStr), "Khung giờ không hợp lệ");
         }
 
         // Validate ngay >= ngay mai
         if (model.NgayKham.Date < DateTime.Today.AddDays(1))
         {
-            ModelState.AddModelError(nameof(model.NgayKham), "Vui long chon ngay tu ngay mai tro di");
+            ModelState.AddModelError(nameof(model.NgayKham), "Vui lòng chọn ngày từ ngày mai trở đi");
         }
 
         // Parse "HH:mm" -> TimeSpan
@@ -69,7 +70,7 @@ public class LichHenController : Controller
         if (ModelState.IsValid &&
             !TimeSpan.TryParseExact(model.GioKhamStr, @"hh\:mm", CultureInfo.InvariantCulture, out gioKham))
         {
-            ModelState.AddModelError(nameof(model.GioKhamStr), "Khong doc duoc gio kham");
+            ModelState.AddModelError(nameof(model.GioKhamStr), "Không đọc được giờ khám");
         }
 
         // Kiem tra bac si ton tai
@@ -79,32 +80,24 @@ public class LichHenController : Controller
             .FirstOrDefaultAsync(b => b.MaBacSi == model.MaBacSi);
         if (bacSi is null)
         {
-            ModelState.AddModelError(nameof(model.MaBacSi), "Bac si khong ton tai");
+            ModelState.AddModelError(nameof(model.MaBacSi), "Bác sĩ không tồn tại");
         }
+
+        var ngayKham = model.NgayKham.Date;
 
         // Trung khung gio (bo qua lich da huy)
         if (ModelState.IsValid && bacSi is not null)
         {
-            bool trung = await _db.LichHens.AnyAsync(l =>
-                l.MaBacSi == bacSi.MaBacSi &&
-                l.NgayKham == model.NgayKham.Date &&
-                l.GioKham == gioKham &&
-                l.TrangThai != TrangThaiLichHen.DaHuy);
-            if (trung)
+            if (await KhungGioDaDuocDatAsync(bacSi.MaBacSi, ngayKham, gioKham))
             {
-                ModelState.AddModelError(nameof(model.GioKhamStr), "Khung gio nay da co lich, vui long chon khung gio khac");
+                ModelState.AddModelError(nameof(model.GioKhamStr),
+                    "Khung giờ này đã có lịch, vui lòng chọn khung giờ khác");
             }
         }
 
         if (!ModelState.IsValid)
         {
-            model.DanhSachBacSi = await _db.BacSis
-                .Include(b => b.NguoiDung)
-                .Include(b => b.ChuyenKhoa)
-                .OrderBy(b => b.NguoiDung!.HoTen)
-                .ToListAsync();
-            model.BacSiHienTai = model.DanhSachBacSi.FirstOrDefault(b => b.MaBacSi == model.MaBacSi);
-            return View(model);
+            return await TraVeFormDatLichAsync(model);
         }
 
         // Tim BenhNhan theo MaNguoiDung trong claim
@@ -112,7 +105,7 @@ public class LichHenController : Controller
         var benhNhan = await _db.BenhNhans.FirstOrDefaultAsync(b => b.MaNguoiDung == maNguoiDung);
         if (benhNhan is null)
         {
-            TempData["LoiThongBao"] = "Tai khoan cua ban chua duoc tao ho so benh nhan, vui long lien he quan tri vien.";
+            TempData["LoiThongBao"] = "Tài khoản của bạn chưa được tạo hồ sơ bệnh nhân, vui lòng liên hệ quản trị viên.";
             return RedirectToAction(nameof(LichHenCuaToi));
         }
 
@@ -120,14 +113,24 @@ public class LichHenController : Controller
         {
             MaBenhNhan = benhNhan.MaBenhNhan,
             MaBacSi = model.MaBacSi,
-            NgayKham = model.NgayKham.Date,
+            NgayKham = ngayKham,
             GioKham = gioKham,
             LyDoKham = model.LyDoKham,
             TrangThai = TrangThaiLichHen.ChoXacNhan,
             NgayDat = DateTime.Now
         };
         _db.LichHens.Add(lichHen);
-        await _db.SaveChangesAsync();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (LaLoiTrungKhungGio(ex))
+        {
+            ModelState.AddModelError(nameof(model.GioKhamStr),
+                "Khung giờ này vừa được người khác đặt, vui lòng chọn khung giờ khác");
+            return await TraVeFormDatLichAsync(model);
+        }
 
         // Gui mail "da nhan lich, cho xac nhan" cho benh nhan.
         // Nap day du navigation truoc khi render template.
@@ -136,7 +139,7 @@ public class LichHenController : Controller
         lichHen.BacSi = bacSi;
         await _email.GuiMailDatLichAsync(lichHen);
 
-        TempData["ThongBao"] = $"Dat lich thanh cong! Lich hen #{lichHen.MaLichHen} dang cho bac si xac nhan.";
+        TempData["ThongBao"] = $"Đặt lịch thành công! Lịch hẹn #{lichHen.MaLichHen} đang chờ bác sĩ xác nhận.";
         return RedirectToAction(nameof(LichHenCuaToi));
     }
 
@@ -211,6 +214,34 @@ public class LichHenController : Controller
     }
 
     // ---------- HELPER ----------
+
+    private async Task<bool> KhungGioDaDuocDatAsync(int maBacSi, DateTime ngayKham, TimeSpan gioKham)
+    {
+        return await _db.LichHens.AnyAsync(l =>
+            l.MaBacSi == maBacSi &&
+            l.NgayKham == ngayKham &&
+            l.GioKham == gioKham &&
+            l.TrangThai != TrangThaiLichHen.DaHuy);
+    }
+
+    private async Task<IActionResult> TraVeFormDatLichAsync(DatLichViewModel model)
+    {
+        model.DanhSachBacSi = await _db.BacSis
+            .Include(b => b.NguoiDung)
+            .Include(b => b.ChuyenKhoa)
+            .OrderBy(b => b.NguoiDung!.HoTen)
+            .ToListAsync();
+        model.BacSiHienTai = model.DanhSachBacSi.FirstOrDefault(b => b.MaBacSi == model.MaBacSi);
+        return View(model);
+    }
+
+    private static bool LaLoiTrungKhungGio(DbUpdateException ex)
+    {
+        if (ex.InnerException is not SqlException sqlEx)
+            return false;
+
+        return sqlEx.Number is 2601 or 2627;
+    }
 
     private int LayMaNguoiDungHienTai()
     {

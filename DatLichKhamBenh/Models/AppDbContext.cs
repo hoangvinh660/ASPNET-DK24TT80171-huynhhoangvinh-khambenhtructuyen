@@ -72,9 +72,10 @@ public class AppDbContext : DbContext
             .HasForeignKey<HoSoBenhAn>(h => h.MaLichHen)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // 1 bac si khong the co 2 lich hen trung cung ngay cung gio
+        // 1 bac si khong the co 2 lich hen trung cung ngay cung gio (bo qua lich da huy)
         modelBuilder.Entity<LichHen>()
             .HasIndex(l => new { l.MaBacSi, l.NgayKham, l.GioKham })
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[TrangThai] <> 'DaHuy'");
     }
 }
