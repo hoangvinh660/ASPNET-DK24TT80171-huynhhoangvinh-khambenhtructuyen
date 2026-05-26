@@ -59,6 +59,14 @@ public class EmailService : IEmailService
             await smtp.SendAsync(message);
             _logger.LogInformation("[EMAIL] Da gui mail toi {ToEmail} - {Subject}", toEmail, subject);
         }
+        catch (AuthenticationException ex)
+        {
+            _logger.LogError(ex,
+                "[EMAIL] Sai thong tin dang nhap SMTP ({SenderEmail}). " +
+                "Voi Gmail: bat 2-Step Verification va tao App Password tai https://myaccount.google.com/apppasswords. " +
+                "Cau hinh tai /Admin/Email hoac TAT gui mail neu dang demo.",
+                settings.SenderEmail);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "[EMAIL] Loi khi gui mail toi {ToEmail}", toEmail);

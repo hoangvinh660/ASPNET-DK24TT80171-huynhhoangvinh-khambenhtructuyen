@@ -17,7 +17,9 @@ public class EmailSettingsProvider : IEmailSettingsProvider
 
     public async Task<CauHinhEmail> GetEntityAsync()
     {
-        var ch = await _db.CauHinhEmails.AsNoTracking().FirstOrDefaultAsync();
+        var ch = await _db.CauHinhEmails.AsNoTracking()
+            .OrderBy(c => c.MaCauHinh)
+            .FirstOrDefaultAsync();
         if (ch is not null) return ch;
 
         // DB chua co record -> tra ve doi tuong tam dua tren appsettings (chua luu DB)

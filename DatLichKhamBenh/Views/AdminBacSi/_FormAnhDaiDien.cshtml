@@ -13,7 +13,8 @@
             <input type="hidden" asp-for="HinhAnh" />
             <div class="form-text">
                 JPG, PNG, WEBP — tối đa @ViewBag.UploadMb MB.
-                Định dạng: @ViewBag.DinhDangAnh
+                Định dạng: @ViewBag.DinhDangAnh.
+                Nếu không chọn ảnh, hệ thống sẽ dùng ảnh mặc định.
             </div>
             <span asp-validation-for="AnhDaiDien" class="text-danger"></span>
         </div>

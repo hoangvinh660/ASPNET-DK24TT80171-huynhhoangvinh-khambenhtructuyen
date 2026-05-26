@@ -22,7 +22,7 @@ public static class SeedData
             var emailFallback = scope.ServiceProvider.GetRequiredService<IOptions<EmailSettings>>().Value;
             db.CauHinhEmails.Add(new CauHinhEmail
             {
-                BatEmail = true,
+                BatEmail = emailFallback.IsConfigured,
                 SmtpServer = emailFallback.SmtpServer,
                 Port = emailFallback.Port,
                 SenderName = emailFallback.SenderName,

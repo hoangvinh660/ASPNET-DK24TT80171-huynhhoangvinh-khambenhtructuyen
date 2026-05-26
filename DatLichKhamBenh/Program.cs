@@ -54,6 +54,12 @@ builder.Services
 
 var app = builder.Build();
 
+// Tao thu muc upload + anh mac dinh neu chua co
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<IBacSiImageService>().DamBaoAnhMacDinhTonTai();
+}
+
 // Tu dong chay migration + nap du lieu mau (chi nap neu DB rong)
 SeedData.Initialize(app.Services);
 

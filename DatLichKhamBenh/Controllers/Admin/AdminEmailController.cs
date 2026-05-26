@@ -22,7 +22,7 @@ public class AdminEmailController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var cfg = await _db.CauHinhEmails.FirstOrDefaultAsync();
+        var cfg = await _db.CauHinhEmails.OrderBy(c => c.MaCauHinh).FirstOrDefaultAsync();
         if (cfg is null)
         {
             // Truong hop hi huu: SeedData chua chay -> tao record trang
@@ -49,7 +49,7 @@ public class AdminEmailController : Controller
             return View(nameof(Index), model);
         }
 
-        var cfg = await _db.CauHinhEmails.FirstOrDefaultAsync();
+        var cfg = await _db.CauHinhEmails.OrderBy(c => c.MaCauHinh).FirstOrDefaultAsync();
         if (cfg is null)
         {
             cfg = new CauHinhEmail();
@@ -79,7 +79,7 @@ public class AdminEmailController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> BatTat()
     {
-        var cfg = await _db.CauHinhEmails.FirstOrDefaultAsync();
+        var cfg = await _db.CauHinhEmails.OrderBy(c => c.MaCauHinh).FirstOrDefaultAsync();
         if (cfg is null) return RedirectToAction(nameof(Index));
 
         cfg.BatEmail = !cfg.BatEmail;

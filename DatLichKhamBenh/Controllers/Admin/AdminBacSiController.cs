@@ -41,7 +41,7 @@ public class AdminBacSiController : Controller
     public async Task<IActionResult> Tao()
     {
         await NapDsChuyenKhoaAsync();
-        return View(new BacSiAdminViewModel());
+        return View(new BacSiAdminViewModel { HinhAnh = _uploadOpt.AnhMacDinh });
     }
 
     [HttpPost]
@@ -120,7 +120,7 @@ public class AdminBacSiController : Controller
             HocVi = bs.HocVi,
             KinhNghiem = bs.KinhNghiem,
             MoTa = bs.MoTa,
-            HinhAnh = bs.HinhAnh,
+            HinhAnh = string.IsNullOrWhiteSpace(bs.HinhAnh) ? _uploadOpt.AnhMacDinh : bs.HinhAnh,
             GiaKham = bs.GiaKham
         };
         return View(vm);

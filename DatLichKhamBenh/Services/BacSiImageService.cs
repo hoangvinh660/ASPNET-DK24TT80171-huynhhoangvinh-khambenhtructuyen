@@ -95,6 +95,24 @@ public class BacSiImageService : IBacSiImageService
         }
     }
 
+    public void DamBaoAnhMacDinhTonTai()
+    {
+        var thuMucVatLy = Path.Combine(_env.WebRootPath, _opt.ThuMucLuu.Replace('/', Path.DirectorySeparatorChar));
+        Directory.CreateDirectory(thuMucVatLy);
+
+        var duongDanMacDinh = Path.Combine(_env.WebRootPath,
+            _opt.AnhMacDinh.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+        if (File.Exists(duongDanMacDinh))
+            return;
+
+        var thuMucAnhMacDinh = Path.GetDirectoryName(duongDanMacDinh);
+        if (!string.IsNullOrEmpty(thuMucAnhMacDinh))
+            Directory.CreateDirectory(thuMucAnhMacDinh);
+
+        File.WriteAllText(duongDanMacDinh, NoiDungAnhMacDinhSvg);
+        _logger.LogInformation("Da tao anh mac dinh: {Path}", _opt.AnhMacDinh);
+    }
+
     private bool LaAnhMacDinh(string duongDan)
     {
         var a = duongDan.Trim().TrimEnd('/');
@@ -103,4 +121,22 @@ public class BacSiImageService : IBacSiImageService
                || a.EndsWith("/default.png", StringComparison.OrdinalIgnoreCase)
                || a.EndsWith("/default-avatar.svg", StringComparison.OrdinalIgnoreCase);
     }
+
+    private const string NoiDungAnhMacDinhSvg = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Anh mac dinh bac si">
+          <defs>
+            <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e8f0fe"/>
+              <stop offset="100%" stop-color="#cfe2ff"/>
+            </linearGradient>
+          </defs>
+          <rect width="128" height="128" fill="url(#bg)"/>
+          <circle cx="64" cy="64" r="58" fill="none" stroke="#0d6efd" stroke-width="2" opacity="0.15"/>
+          <circle cx="64" cy="44" r="20" fill="#0d6efd" opacity="0.85"/>
+          <path d="M28 108c7-22 24-34 36-34s29 12 36 34" fill="#0d6efd" opacity="0.85"/>
+          <circle cx="64" cy="72" r="7" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+          <path d="M64 79v6M58 85h12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+          <path d="M71 72c4-6 10-8 14-6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        """;
 }
