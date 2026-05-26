@@ -87,7 +87,7 @@ public static class SeedData
                 HocVi = "Tiến sĩ - Bác sĩ",
                 KinhNghiem = "15 năm kinh nghiệm tại BV Bạch Mai.",
                 MoTa = "Chuyên về các bệnh lý tim mạch và tiêu hoá.",
-                HinhAnh = "/images/bacsi/default.png",
+                HinhAnh = "/images/bacsi/default-avatar.svg",
                 GiaKham = 300_000m
             },
             new()
@@ -97,7 +97,7 @@ public static class SeedData
                 HocVi = "Thạc sĩ - Bác sĩ",
                 KinhNghiem = "10 năm kinh nghiệm phẫu thuật tổng quát.",
                 MoTa = "Phẫu thuật tiêu hoá, gan mật tuỵ, thoát vị.",
-                HinhAnh = "/images/bacsi/default.png",
+                HinhAnh = "/images/bacsi/default-avatar.svg",
                 GiaKham = 350_000m
             },
             new()
@@ -107,7 +107,7 @@ public static class SeedData
                 HocVi = "Bác sĩ chuyên khoa II",
                 KinhNghiem = "12 năm sản phụ khoa tại BV Từ Dũ.",
                 MoTa = "Theo dõi thai kỳ, sản khoa nguy cơ cao.",
-                HinhAnh = "/images/bacsi/default.png",
+                HinhAnh = "/images/bacsi/default-avatar.svg",
                 GiaKham = 400_000m
             },
             new()
@@ -117,7 +117,7 @@ public static class SeedData
                 HocVi = "Bác sĩ chuyên khoa I",
                 KinhNghiem = "8 năm khám nhi tại BV Nhi Trung ương.",
                 MoTa = "Sơ sinh, nhi tổng quát, tư vấn dinh dưỡng trẻ.",
-                HinhAnh = "/images/bacsi/default.png",
+                HinhAnh = "/images/bacsi/default-avatar.svg",
                 GiaKham = 250_000m
             },
             new()
@@ -127,7 +127,7 @@ public static class SeedData
                 HocVi = "Thạc sĩ - Bác sĩ",
                 KinhNghiem = "9 năm tại BV Mắt Trung ương.",
                 MoTa = "Khám khúc xạ, mổ Phaco, glaucoma.",
-                HinhAnh = "/images/bacsi/default.png",
+                HinhAnh = "/images/bacsi/default-avatar.svg",
                 GiaKham = 280_000m
             },
         };

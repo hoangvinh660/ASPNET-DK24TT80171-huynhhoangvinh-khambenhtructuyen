@@ -1,9 +1,20 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using DatLichKhamBenh.Models;
 using DatLichKhamBenh.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Cau hinh upload anh bac si
+builder.Services.Configure<BacSiUploadSettings>(builder.Configuration.GetSection("BacSiUpload"));
+builder.Services.AddScoped<IBacSiImageService, BacSiImageService>();
+
+var uploadMb = builder.Configuration.GetValue("BacSiUpload:KichThuocToiDaMb", 2);
+builder.Services.Configure<FormOptions>(opt =>
+{
+    opt.MultipartBodyLengthLimit = uploadMb * 1024L * 1024L;
+});
 
 // Dang ky MVC (Controllers + Views)
 builder.Services.AddControllersWithViews();

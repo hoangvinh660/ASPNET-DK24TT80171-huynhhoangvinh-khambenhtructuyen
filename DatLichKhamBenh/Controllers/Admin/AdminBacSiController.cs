@@ -1,9 +1,11 @@
 using DatLichKhamBenh.Models;
 using DatLichKhamBenh.Models.ViewModels;
+using DatLichKhamBenh.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace DatLichKhamBenh.Controllers.Admin;
 
@@ -12,10 +14,17 @@ namespace DatLichKhamBenh.Controllers.Admin;
 public class AdminBacSiController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IBacSiImageService _anhService;
+    private readonly BacSiUploadSettings _uploadOpt;
 
-    public AdminBacSiController(AppDbContext db)
+    public AdminBacSiController(
+        AppDbContext db,
+        IBacSiImageService anhService,
+        IOptions<BacSiUploadSettings> uploadOpt)
     {
         _db = db;
+        _anhService = anhService;
+        _uploadOpt = uploadOpt.Value;
     }
 
     public async Task<IActionResult> Index()
@@ -40,22 +49,23 @@ public class AdminBacSiController : Controller
     public async Task<IActionResult> Tao(BacSiAdminViewModel model)
     {
         await NapDsChuyenKhoaAsync(model.MaChuyenKhoa);
+        ModelState.Remove(nameof(model.AnhDaiDien));
 
         if (string.IsNullOrWhiteSpace(model.MatKhau))
         {
-            ModelState.AddModelError(nameof(model.MatKhau), "Vui long nhap mat khau cho tai khoan bac si.");
+            ModelState.AddModelError(nameof(model.MatKhau), "Vui lòng nhập mật khẩu cho tài khoản bác sĩ.");
         }
 
-        // Check trung ten dang nhap / email
         if (await _db.NguoiDungs.AnyAsync(u => u.TenDangNhap == model.TenDangNhap))
         {
-            ModelState.AddModelError(nameof(model.TenDangNhap), "Ten dang nhap da ton tai.");
+            ModelState.AddModelError(nameof(model.TenDangNhap), "Tên đăng nhập đã tồn tại.");
         }
         if (await _db.NguoiDungs.AnyAsync(u => u.Email == model.Email))
         {
-            ModelState.AddModelError(nameof(model.Email), "Email da ton tai.");
+            ModelState.AddModelError(nameof(model.Email), "Email đã tồn tại.");
         }
 
+        var hinhAnh = await XuLyAnhAsync(model, null);
         if (!ModelState.IsValid) return View(model);
 
         var nguoiDung = new NguoiDung
@@ -78,13 +88,13 @@ public class AdminBacSiController : Controller
             HocVi = model.HocVi,
             KinhNghiem = model.KinhNghiem,
             MoTa = model.MoTa,
-            HinhAnh = model.HinhAnh,
+            HinhAnh = hinhAnh ?? _uploadOpt.AnhMacDinh,
             GiaKham = model.GiaKham
         };
         _db.BacSis.Add(bacSi);
         await _db.SaveChangesAsync();
 
-        TempData["ThongBao"] = $"Da them bac si '{model.HoTen}'.";
+        TempData["ThongBao"] = $"Đã thêm bác sĩ '{model.HoTen}'.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -122,22 +132,23 @@ public class AdminBacSiController : Controller
     {
         if (id != model.MaBacSi) return BadRequest();
         await NapDsChuyenKhoaAsync(model.MaChuyenKhoa);
+        ModelState.Remove(nameof(model.AnhDaiDien));
 
         var bs = await _db.BacSis
             .Include(b => b.NguoiDung)
             .FirstOrDefaultAsync(b => b.MaBacSi == id);
         if (bs is null) return NotFound();
 
-        // Khi sua: cho doi email/ten dang nhap nhung phai unique voi nguoi khac
         if (await _db.NguoiDungs.AnyAsync(u => u.TenDangNhap == model.TenDangNhap && u.MaNguoiDung != bs.MaNguoiDung))
         {
-            ModelState.AddModelError(nameof(model.TenDangNhap), "Ten dang nhap da ton tai.");
+            ModelState.AddModelError(nameof(model.TenDangNhap), "Tên đăng nhập đã tồn tại.");
         }
         if (await _db.NguoiDungs.AnyAsync(u => u.Email == model.Email && u.MaNguoiDung != bs.MaNguoiDung))
         {
-            ModelState.AddModelError(nameof(model.Email), "Email da ton tai.");
+            ModelState.AddModelError(nameof(model.Email), "Email đã tồn tại.");
         }
 
+        var hinhAnh = await XuLyAnhAsync(model, bs.HinhAnh);
         if (!ModelState.IsValid) return View(model);
 
         bs.NguoiDung!.TenDangNhap = model.TenDangNhap.Trim();
@@ -153,11 +164,14 @@ public class AdminBacSiController : Controller
         bs.HocVi = model.HocVi;
         bs.KinhNghiem = model.KinhNghiem;
         bs.MoTa = model.MoTa;
-        bs.HinhAnh = model.HinhAnh;
+        if (hinhAnh is not null)
+        {
+            bs.HinhAnh = hinhAnh;
+        }
         bs.GiaKham = model.GiaKham;
 
         await _db.SaveChangesAsync();
-        TempData["ThongBao"] = $"Da cap nhat bac si '{model.HoTen}'.";
+        TempData["ThongBao"] = $"Đã cập nhật bác sĩ '{model.HoTen}'.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -173,11 +187,12 @@ public class AdminBacSiController : Controller
 
         if (bs.DanhSachLichHen.Any())
         {
-            TempData["LoiThongBao"] = $"Khong the xoa bac si '{bs.NguoiDung!.HoTen}' vi dang co {bs.DanhSachLichHen.Count} lich hen.";
+            TempData["LoiThongBao"] = $"Không thể xóa bác sĩ '{bs.NguoiDung!.HoTen}' vì đang có {bs.DanhSachLichHen.Count} lịch hẹn.";
             return RedirectToAction(nameof(Index));
         }
 
-        // Xoa BacSi truoc, sau do xoa NguoiDung lien quan
+        _anhService.XoaAnh(bs.HinhAnh);
+
         _db.BacSis.Remove(bs);
         if (bs.NguoiDung is not null)
         {
@@ -185,13 +200,32 @@ public class AdminBacSiController : Controller
         }
         await _db.SaveChangesAsync();
 
-        TempData["ThongBao"] = "Da xoa bac si va tai khoan lien quan.";
+        TempData["ThongBao"] = "Đã xóa bác sĩ và tài khoản liên quan.";
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>Xu ly upload anh; tra ve null neu giu nguyen anh cu</summary>
+    private async Task<string?> XuLyAnhAsync(BacSiAdminViewModel model, string? anhCu)
+    {
+        if (model.AnhDaiDien is { Length: > 0 })
+        {
+            var (duongDan, loi) = await _anhService.LuuAnhAsync(model.AnhDaiDien, anhCu);
+            if (loi is not null)
+            {
+                ModelState.AddModelError(nameof(model.AnhDaiDien), loi);
+                return anhCu;
+            }
+            return duongDan;
+        }
+
+        return anhCu;
     }
 
     private async Task NapDsChuyenKhoaAsync(int? selected = null)
     {
         var ds = await _db.ChuyenKhoas.OrderBy(c => c.TenChuyenKhoa).ToListAsync();
         ViewBag.DsChuyenKhoa = new SelectList(ds, "MaChuyenKhoa", "TenChuyenKhoa", selected);
+        ViewBag.UploadMb = _uploadOpt.KichThuocToiDaMb;
+        ViewBag.DinhDangAnh = string.Join(", ", _uploadOpt.DinhDangChoPhep);
     }
 }
