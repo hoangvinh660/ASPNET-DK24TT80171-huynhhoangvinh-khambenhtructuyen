@@ -39,10 +39,7 @@ button.accept-policy {
   line-height: inherit;
 }
 
+/* Footer: dung luong thuong, khong position:absolute (tranh che noi dung khi scroll) */
 .footer {
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
 }
