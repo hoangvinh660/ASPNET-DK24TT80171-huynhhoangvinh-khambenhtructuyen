@@ -232,7 +232,8 @@ namespace DatLichKhamBenh.Migrations
                     b.HasIndex("MaBenhNhan");
 
                     b.HasIndex("MaBacSi", "NgayKham", "GioKham")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[TrangThai] <> 'DaHuy'");
 
                     b.ToTable("LichHen");
                 });
