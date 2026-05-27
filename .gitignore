@@ -7,8 +7,7 @@
 .cursorrules
 
 # ---------- Markdown (khong day len GitHub) ----------
-*.md
-**/*.md
+noi-dung-do-an.md
 # ---------- Visual Studio / VS Code / Rider ----------
 .vs/
 .vscode/
