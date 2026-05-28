@@ -69,6 +69,8 @@ wwwroot/dist/
 *.mdf
 *.ldf
 *.ndf
+*.bak
+backups/
 
 # ---------- User-specific files ----------
 *.dbmdl
@@ -86,6 +88,7 @@ Desktop.ini
 
 # ---------- Secrets ----------
 appsettings.*.local.json
+appsettings.Online.json
 secrets.json
 *.key
 *.pem

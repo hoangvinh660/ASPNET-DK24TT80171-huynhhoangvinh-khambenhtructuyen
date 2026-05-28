@@ -18,8 +18,13 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Root = $PSScriptRoot
-$Project = Join-Path $Root "DatLichKhamBenh\DatLichKhamBenh.csproj"
+$Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+
+$ProjectCandidates = @(
+    (Join-Path (Join-Path (Join-Path $Root "src") "DatLichKhamBenh") "DatLichKhamBenh.csproj"),
+    (Join-Path (Join-Path $Root "DatLichKhamBenh") "DatLichKhamBenh.csproj")
+)
+$Project = $ProjectCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 function Write-Step([string]$Msg) {
     Write-Host ""
