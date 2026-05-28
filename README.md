@@ -43,38 +43,45 @@ Website cho phép bệnh nhân tìm bác sĩ theo chuyên khoa, đặt lịch kh
 
 ```
 dangkykhambenh/
-├── DatLichKhamBenh.sln
 ├── README.md
 ├── .gitignore
-└── DatLichKhamBenh/
-    ├── Controllers/
-    │   ├── Admin/                       # 5 controller Admin (dashboard + CRUD)
-    │   ├── BacSiController.cs           # Tìm/xem bác sĩ (public)
-    │   ├── BacSiLichHenController.cs    # Khu vực bác sĩ: xác nhận, từ chối, nhập kết quả
-    │   ├── ChuyenKhoaController.cs      # Danh sách / chi tiết chuyên khoa (public)
-    │   ├── LichHenController.cs         # Bệnh nhân: đặt / xem / hủy lịch
-    │   ├── TaiKhoanController.cs        # Đăng ký, đăng nhập, đăng xuất
-    │   └── TrangChuController.cs        # Trang chủ + Privacy + Error
-    ├── Models/
-    │   ├── AppDbContext.cs              # DbContext + cấu hình quan hệ
-    │   ├── SeedData.cs                  # Nạp dữ liệu mẫu lúc startup
-    │   ├── NguoiDung.cs                 # Tài khoản chung cho 3 vai trò
-    │   ├── BacSi.cs / BenhNhan.cs       # Hồ sơ liên kết 1-1 với NguoiDung
-    │   ├── ChuyenKhoa.cs / LichHen.cs / HoSoBenhAn.cs
-    │   └── ViewModels/                  # Các form input (đăng ký, đăng nhập, đặt lịch, …)
-    ├── Services/
-    │   ├── IEmailService.cs
-    │   ├── EmailService.cs              # MailKit + chế độ "dev log" fallback
-    │   └── EmailSettings.cs
-    ├── Migrations/                      # EF Core migrations
-    ├── Views/                            # Razor views (theo controller)
-    │   ├── Shared/_Layout.cshtml         # Layout chính (cho user/BN/BS)
-    │   ├── Shared/_AdminLayout.cshtml    # Layout cho khu Admin (sidebar)
-    │   └── …
-    ├── wwwroot/                          # Static (css, js, lib bootstrap, jQuery)
-    ├── Program.cs                        # Đăng ký DI, Auth, Session, Email
-    ├── appsettings.json
-    └── DatLichKhamBenh.csproj
+├── setup/                                # Script PowerShell tiện ích
+│   ├── chay-web.ps1
+│   ├── cap-nhat-database.ps1
+│   ├── reset-database.ps1
+│   ├── backup-database.ps1
+│   └── restore-database.ps1
+└── src/
+    ├── DatLichKhamBenh.sln
+    └── DatLichKhamBenh/
+        ├── Controllers/
+        │   ├── Admin/                       # Controller Admin (dashboard + CRUD)
+        │   ├── BacSiController.cs           # Tìm/xem bác sĩ (public)
+        │   ├── BacSiLichHenController.cs    # Khu vực bác sĩ: xác nhận, từ chối, nhập kết quả
+        │   ├── ChuyenKhoaController.cs      # Danh sách / chi tiết chuyên khoa (public)
+        │   ├── LichHenController.cs         # Bệnh nhân: đặt / xem / hủy lịch
+        │   ├── TaiKhoanController.cs        # Đăng ký, đăng nhập, đăng xuất
+        │   └── TrangChuController.cs        # Trang chủ + Privacy + Error
+        ├── Models/
+        │   ├── AppDbContext.cs              # DbContext + cấu hình quan hệ
+        │   ├── SeedData.cs                  # Nạp dữ liệu mẫu lúc startup
+        │   ├── NguoiDung.cs                 # Tài khoản chung cho 3 vai trò
+        │   ├── BacSi.cs / BenhNhan.cs       # Hồ sơ liên kết 1-1 với NguoiDung
+        │   ├── ChuyenKhoa.cs / LichHen.cs / HoSoBenhAn.cs
+        │   └── ViewModels/                  # Các form input (đăng ký, đăng nhập, đặt lịch, …)
+        ├── Services/
+        │   ├── IEmailService.cs
+        │   ├── EmailService.cs              # MailKit + chế độ "dev log" fallback
+        │   └── EmailSettings.cs
+        ├── Migrations/                      # EF Core migrations
+        ├── Views/                            # Razor views (theo controller)
+        │   ├── Shared/_Layout.cshtml         # Layout chính (cho user/BN/BS)
+        │   ├── Shared/_AdminLayout.cshtml    # Layout cho khu Admin (sidebar)
+        │   └── …
+        ├── wwwroot/                          # Static (css, js, lib bootstrap, jQuery)
+        ├── Program.cs                        # Đăng ký DI, Auth, Session, Email
+        ├── appsettings.json
+        └── DatLichKhamBenh.csproj
 ```
 
 ---
@@ -83,7 +90,7 @@ dangkykhambenh/
 
 ### 4.1 Cấu hình connection string
 
-Mở `DatLichKhamBenh/appsettings.json`, sửa `ConnectionStrings.DatLichKhamBenh` cho khớp với SQL Server của bạn:
+Mở `src/DatLichKhamBenh/appsettings.json`, sửa `ConnectionStrings.DatLichKhamBenh` cho khớp với SQL Server của bạn:
 
 ```jsonc
 "ConnectionStrings": {
@@ -98,7 +105,7 @@ Mở `DatLichKhamBenh/appsettings.json`, sửa `ConnectionStrings.DatLichKhamBen
 ```powershell
 dotnet restore
 dotnet build
-dotnet run --project DatLichKhamBenh\DatLichKhamBenh.csproj
+dotnet run --project src\DatLichKhamBenh\DatLichKhamBenh.csproj
 ```
 
 Khi khởi động lần đầu:
@@ -117,28 +124,30 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 | Script | Tác dụng |
 |---|---|
-| `chay-web.ps1` | Build + chạy nhanh project |
-| `cap-nhat-database.ps1` | Tạo migration mới rồi `database update` |
-| `reset-database.ps1` | **Drop** database rồi tạo lại từ đầu (xóa toàn bộ dữ liệu) |
+| `setup/chay-web.ps1` | Build + chạy nhanh project |
+| `setup/cap-nhat-database.ps1` | Tạo migration mới rồi `database update` |
+| `setup/reset-database.ps1` | **Drop** database rồi tạo lại từ đầu (xóa toàn bộ dữ liệu) |
+| `setup/backup-database.ps1` | Backup DB ra file `.bak` |
+| `setup/restore-database.ps1` | Restore DB từ file `.bak` |
 
 **Ví dụ:**
 
 ```powershell
 # Chạy web (mặc định http://localhost:5231)
-.\chay-web.ps1
+.\setup\chay-web.ps1
 
 # Bỏ qua build nếu vừa build xong
-.\chay-web.ps1 -NoBuild
+.\setup\chay-web.ps1 -NoBuild
 
 # Sau khi sửa Model, tạo migration + cập nhật DB
-.\cap-nhat-database.ps1 -TenMigration "ThemCotMoi"
-# hoặc chạy .\cap-nhat-database.ps1 rồi nhập tên khi được hỏi
+.\setup\cap-nhat-database.ps1 -TenMigration "ThemCotMoi"
+# hoặc chạy .\setup\cap-nhat-database.ps1 rồi nhập tên khi được hỏi
 
 # Reset DB về trạng thái ban đầu (mất hết dữ liệu — gõ yes để xác nhận)
-.\reset-database.ps1
+.\setup\reset-database.ps1
 ```
 
-> Trước khi chạy: sửa `ConnectionStrings` trong `DatLichKhamBenh/appsettings.json` cho khớp SQL Server của bạn.
+> Trước khi chạy: sửa `ConnectionStrings` trong `src/DatLichKhamBenh/appsettings.json` cho khớp SQL Server của bạn.
 
 ---
 
@@ -198,7 +207,7 @@ warn: DatLichKhamBenh.Services.EmailService[0]
 2. Truy cập **App passwords** tại <https://myaccount.google.com/apppasswords>.
 3. Chọn *App* = "Mail", *Device* = "Other" → đặt tên `DatLichKhamBenh` → **Generate**.
 4. Google trả về mật khẩu **16 ký tự** dạng `xxxx yyyy zzzz wwww`. Bỏ khoảng trắng khi paste.
-5. Sửa `DatLichKhamBenh/appsettings.json`:
+5. Sửa `src/DatLichKhamBenh/appsettings.json`:
 
 ```jsonc
 "EmailSettings": {
@@ -228,14 +237,14 @@ info: DatLichKhamBenh.Services.EmailService[0]
 ## 8. Reset database
 
 ```powershell
-.\reset-database.ps1
+.\setup\reset-database.ps1
 ```
 
 Hoặc thủ công:
 
 ```powershell
-dotnet ef database drop --force --project DatLichKhamBenh\DatLichKhamBenh.csproj
-dotnet ef database update --project DatLichKhamBenh\DatLichKhamBenh.csproj
+dotnet ef database drop --force --project src\DatLichKhamBenh\DatLichKhamBenh.csproj
+dotnet ef database update --project src\DatLichKhamBenh\DatLichKhamBenh.csproj
 ```
 
 Sau khi DB rỗng, lần chạy `dotnet run` tiếp theo `SeedData.Initialize()` sẽ nạp lại dữ liệu mẫu.
