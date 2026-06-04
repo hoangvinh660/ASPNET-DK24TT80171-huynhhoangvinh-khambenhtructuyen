@@ -33,6 +33,8 @@ Website đặt lịch khám: bệnh nhân tìm bác sĩ và đặt lịch; bác 
 ```
 dangkykhambenh/
 ├── README.md
+├── setup/                        # File ho tro (backup DB, ...)
+│   └── Database/                 # Backup mau (.bak / .zip)
 └── src/
     ├── DatLichKhamBenh.sln
     └── DatLichKhamBenh/          # Source web
@@ -44,7 +46,7 @@ dangkykhambenh/
         └── DatLichKhamBenh.csproj
 ```
 
-> Thư mục `setup/` (nếu có trên máy bạn) chỉ dùng cục bộ — **không đưa lên GitHub**.
+> File `*.ps1` trong `setup/` (nếu có trên máy bạn) **không đưa lên GitHub** — dùng lệnh `dotnet` trong README.
 
 ---
 
@@ -133,8 +135,8 @@ Muốn gửi thật: cấu hình `EmailSettings` trong `src/DatLichKhamBenh/apps
 
 ## Lưu ý khi push GitHub
 
-- Chỉ đẩy source trong `src/`.
-- Không commit: `appsettings.Online.json`, file `.bak`, thư mục `backups/`, file `*.ps1`.
+- Đẩy `src/` và `setup/` (backup trong `setup/Database/`).
+- **Không** commit: `*.ps1`, `appsettings.Online.json`, thư mục `backups/` ở root.
 - Sửa connection string cho đúng máy của người clone.
 
 ---

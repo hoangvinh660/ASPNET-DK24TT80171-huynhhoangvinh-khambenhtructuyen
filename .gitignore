@@ -93,6 +93,5 @@ secrets.json
 *.key
 *.pem
 
-# ---------- Local scripts / setup (khong day len GitHub) ----------
+# ---------- PowerShell scripts (chi dung local, khong day len GitHub) ----------
 *.ps1
-setup/
