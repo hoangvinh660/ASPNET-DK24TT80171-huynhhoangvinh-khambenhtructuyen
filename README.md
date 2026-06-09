@@ -2,7 +2,8 @@
 
 Đồ án tốt nghiệp — ASP.NET Core MVC 8 + SQL Server.
 
-**Sinh viên:** Huỳnh Hoàng Vinh — DK24TT80171
+**Sinh viên:** Huỳnh Hoàng Vinh — DK24TT80171  
+**Giảng viên hướng dẫn:** TS. Đoàn Phước Miền
 
 ---
 
