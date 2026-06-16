@@ -7,16 +7,6 @@
 
 ---
 
-## Demo online
-
-**https://huynhvinh-001-site1.anytempurl.com/**
-
-Website demo đang chạy trên hosting. Dùng tài khoản ở mục bên dưới để đăng nhập thử.
-
-> Website tồn tại đến **30/06/2026**.
-
----
-
 ## Tải về
 
 ```powershell
